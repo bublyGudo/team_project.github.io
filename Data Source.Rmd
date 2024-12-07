@@ -2,7 +2,6 @@
 title: "NYC Food Access: Behind the Scenes"
 output: 
   html_document:
-    code_folding: hide
     always_allow_html: true
 ---
 <br><br>
@@ -23,25 +22,14 @@ output:
 
 7. [Households by Total Money Income, Race, and Hispanic Origin of Householder: 1967 to 2023](https://www2.census.gov/programs-surveys/demo/tables/p60/282/tableA2.xlsx): We utilized this dataset to identify the income brackets for the household income map. 
 
+8. [NYC zip code shapefile]()
 <br><br>
 
-```{r setup, include = FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 
-library(tidyverse)
-```
+### Data Sources
 
-```{r}
-# add our datasets
-```
+The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/bublyGudo/team_project.github.io). 
 
-
-### Data Dictionary
-
-The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/bublyGudo/team_project.github.io).
-
-
-Here should be some introduction to our variables
 
 
 
