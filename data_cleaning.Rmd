@@ -1,0 +1,117 @@
+---
+title: "Data Cleaning For Each Question"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+# 1. Welcome to Food Sources (Home)
+
+1.1 Healthy Stores Dataset:
+Standardized column names using janitor::clean_names().
+Corrected borough name from "New York" to "Manhattan".
+Renamed columns:
+year_awarded → year
+street_address → store_address.
+Selected relevant columns: store_name, borough, year, store_address, latitude, longitude.
+Removed duplicate entries based on latitude and longitude.
+Added a new column type with the value "healthy store".
+
+1.2 Farmers Market Dataset:
+Standardized column names using janitor::clean_names().
+Renamed columns:
+farmers_market → store_name
+address → store_address.
+Selected relevant columns: store_name, borough, year, store_address, latitude, longitude.
+Removed duplicate entries based on latitude and longitude.
+Added a type column with the value "farmer market".
+Corrected longitude values for two markets:
+Saratoga Farm Stand (corrected from dataset).
+Morris Heights Farmstand (corrected using online data).
+
+1.3 Retail Food Stores Dataset:
+Standardized column names using janitor::clean_names().
+Created a new address column by combining street_number and street_name.
+Renamed columns:
+entity_name → store_name
+address → store_address.
+Added columns:
+year with the value 2014.
+type with the value "retail store".
+Selected relevant columns: store_name, borough, year, store_address, latitude, longitude, type.
+Removed duplicate entries based on latitude and longitude.
+
+1.4 Combining All Datasets:
+Combined the cleaned datasets (stores, farmer_market, retail_stores, and pantries) using rbind().
+Corrected borough name: "Queen" → "Queens".
+Saved the combined dataset as stores_markets_retails_pantries.csv.
+
+# 2. ShinyApp: Walkability
+
+2.1 Load the Dataset: The read.csv() function is used to load the dataset from the file MTA_Subway_Stations_20241106.csv.
+
+2.2 Standardize Column Names: The janitor::clean_names() function ensures that column names are standardized to lowercase and snake_case for consistency and ease of use in further analysis.
+
+2.3 Select Relevant Columns: The select() function keeps only the necessary columns: line, stop_name, gtfs_latitude, gtfs_longitude, and borough.
+Irrelevant columns are removed, reducing noise in the dataset.
+
+2.4 Clean the borough Values: The mutate() function is used to clean and standardize the borough values:
+"Q" is replaced with "Queens".
+"M" is replaced with "Manhattan".
+"Bk" is replaced with "Brooklyn".
+"Bx" is replaced with "Bronx".
+"SI" is replaced with "Staten Island".
+
+2.5 Rename Columns: The rename() function renames gtfs_latitude and gtfs_longitude to latitude and longitude, respectively, for clarity and consistency.
+
+2.6 Save the Cleaned Dataset: The cleaned dataset is written to a new file subway.csv using the write.csv() function, allowing for easy reuse in subsequent analyses.
+
+2.7 Filter Out Missing Coordinates:
+Stores Dataset: Removed rows with missing latitude or longitude.
+Subway Dataset: Removed rows with missing latitude or longitude.
+
+2.8 Convert to sf Objects:
+Converted both datasets to simple feature (sf) objects using st_as_sf():
+Stores Dataset: Used latitude and longitude for coordinates.
+Subway Dataset: Used latitude and longitude for coordinates.
+Set the Coordinate Reference System (CRS) to EPSG:4326 (WGS84).
+
+# 3. Store Density vs Overweight Percentage
+
+3.1 Healthy Stores Dataset:
+Standardized column names using janitor::clean_names().
+Corrected the borough name from "New York" to "Manhattan".
+Renamed:
+year_awarded → year
+store_name → healthy_store_market.
+Removed duplicate entries based on latitude and longitude.
+Selected relevant columns: healthy_store_market, borough, year.
+
+3.2 Farmers Market Dataset:
+Standardized column names using janitor::clean_names().
+Removed duplicate entries based on latitude and longitude.
+Selected relevant columns: farmers_market, borough, year.
+Renamed:
+farmers_market → healthy_store_market.
+
+3.3 Combining Healthy Stores and Farmers Markets:
+Combined the cleaned healthy stores and farmers market datasets using rbind() into a unified dataset stores_farmer_market.
+
+3.4 Overweight Data:
+Standardized column names using janitor::clean_names().
+Split the Percent column into three new columns (percent, low_confidence, high_confidence) using separate().
+Converted percent to numeric for accurate calculations.
+Renamed:
+geography → borough
+time_period → year
+percent → overweight_percentage.
+Selected relevant columns: overweight_percentage, borough, year.
+
+3.5 Counting Stores and Markets by Borough and Year:
+Grouped the stores_farmer_market dataset by year and borough.
+Calculated the count of healthy stores and farmers' markets for each borough and year.
+
+3.6 Joining Healthy Stores/Markets with Overweight Data:
+Merged the store/market counts with the overweight dataset (overweight) using a full join on year and borough.
+Converted the year column to a factor for categorical analysis.

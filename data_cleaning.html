@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Data Cleaning For Each Question</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="team.html">Team</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Results
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="store_density_and_household_income.html">Store Density vs Household Income</a>
+    </li>
+    <li>
+      <a href="store_overweight_regression.html">Store Density vs Overweight Percentage</a>
+    </li>
+    <li>
+      <a href="pendemic_impact_on_stores.html">Pendemic Impact On Stores</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Walkability
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://bublygudo.shinyapps.io/walkable/">ShinyApp: Walkability</a>
+    </li>
+    <li>
+      <a href="walkability_summary.html">Walkability Summary</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data Sources
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="original_datasets.html">Original Datasets</a>
+    </li>
+    <li>
+      <a href="data_cleaning.html">Data Cleaning</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="project_report.html">Project Report</a>
+</li>
+<li>
+  <a href="mailto:fw2394@cumc.columbia.edu, cm3341@cumc.columbia.edu, tc3326@cumc.columbia.edu, scs2267@cumc.columbia.edu, zw2975@cumc.columbia.edu">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/bublyGudo/team_project.github.io">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Data Cleaning For Each Question</h1>
+
+</div>
+
+
+<div id="welcome-to-food-sources-home" class="section level1">
+<h1>1. Welcome to Food Sources (Home)</h1>
+<p>1.1 Healthy Stores Dataset: Standardized column names using
+janitor::clean_names(). Corrected borough name from “New York” to
+“Manhattan”. Renamed columns: year_awarded → year street_address →
+store_address. Selected relevant columns: store_name, borough, year,
+store_address, latitude, longitude. Removed duplicate entries based on
+latitude and longitude. Added a new column type with the value “healthy
+store”.</p>
+<p>1.2 Farmers Market Dataset: Standardized column names using
+janitor::clean_names(). Renamed columns: farmers_market → store_name
+address → store_address. Selected relevant columns: store_name, borough,
+year, store_address, latitude, longitude. Removed duplicate entries
+based on latitude and longitude. Added a type column with the value
+“farmer market”. Corrected longitude values for two markets: Saratoga
+Farm Stand (corrected from dataset). Morris Heights Farmstand (corrected
+using online data).</p>
+<p>1.3 Retail Food Stores Dataset: Standardized column names using
+janitor::clean_names(). Created a new address column by combining
+street_number and street_name. Renamed columns: entity_name → store_name
+address → store_address. Added columns: year with the value 2014. type
+with the value “retail store”. Selected relevant columns: store_name,
+borough, year, store_address, latitude, longitude, type. Removed
+duplicate entries based on latitude and longitude.</p>
+<p>1.4 Combining All Datasets: Combined the cleaned datasets (stores,
+farmer_market, retail_stores, and pantries) using rbind(). Corrected
+borough name: “Queen” → “Queens”. Saved the combined dataset as
+stores_markets_retails_pantries.csv.</p>
+</div>
+<div id="shinyapp-walkability" class="section level1">
+<h1>2. ShinyApp: Walkability</h1>
+<p>2.1 Load the Dataset: The read.csv() function is used to load the
+dataset from the file MTA_Subway_Stations_20241106.csv.</p>
+<p>2.2 Standardize Column Names: The janitor::clean_names() function
+ensures that column names are standardized to lowercase and snake_case
+for consistency and ease of use in further analysis.</p>
+<p>2.3 Select Relevant Columns: The select() function keeps only the
+necessary columns: line, stop_name, gtfs_latitude, gtfs_longitude, and
+borough. Irrelevant columns are removed, reducing noise in the
+dataset.</p>
+<p>2.4 Clean the borough Values: The mutate() function is used to clean
+and standardize the borough values: “Q” is replaced with “Queens”. “M”
+is replaced with “Manhattan”. “Bk” is replaced with “Brooklyn”. “Bx” is
+replaced with “Bronx”. “SI” is replaced with “Staten Island”.</p>
+<p>2.5 Rename Columns: The rename() function renames gtfs_latitude and
+gtfs_longitude to latitude and longitude, respectively, for clarity and
+consistency.</p>
+<p>2.6 Save the Cleaned Dataset: The cleaned dataset is written to a new
+file subway.csv using the write.csv() function, allowing for easy reuse
+in subsequent analyses.</p>
+<p>2.7 Filter Out Missing Coordinates: Stores Dataset: Removed rows with
+missing latitude or longitude. Subway Dataset: Removed rows with missing
+latitude or longitude.</p>
+<p>2.8 Convert to sf Objects: Converted both datasets to simple feature
+(sf) objects using st_as_sf(): Stores Dataset: Used latitude and
+longitude for coordinates. Subway Dataset: Used latitude and longitude
+for coordinates. Set the Coordinate Reference System (CRS) to EPSG:4326
+(WGS84).</p>
+</div>
+<div id="store-density-vs-overweight-percentage" class="section level1">
+<h1>3. Store Density vs Overweight Percentage</h1>
+<p>3.1 Healthy Stores Dataset: Standardized column names using
+janitor::clean_names(). Corrected the borough name from “New York” to
+“Manhattan”. Renamed: year_awarded → year store_name →
+healthy_store_market. Removed duplicate entries based on latitude and
+longitude. Selected relevant columns: healthy_store_market, borough,
+year.</p>
+<p>3.2 Farmers Market Dataset: Standardized column names using
+janitor::clean_names(). Removed duplicate entries based on latitude and
+longitude. Selected relevant columns: farmers_market, borough, year.
+Renamed: farmers_market → healthy_store_market.</p>
+<p>3.3 Combining Healthy Stores and Farmers Markets: Combined the
+cleaned healthy stores and farmers market datasets using rbind() into a
+unified dataset stores_farmer_market.</p>
+<p>3.4 Overweight Data: Standardized column names using
+janitor::clean_names(). Split the Percent column into three new columns
+(percent, low_confidence, high_confidence) using separate(). Converted
+percent to numeric for accurate calculations. Renamed: geography →
+borough time_period → year percent → overweight_percentage. Selected
+relevant columns: overweight_percentage, borough, year.</p>
+<p>3.5 Counting Stores and Markets by Borough and Year: Grouped the
+stores_farmer_market dataset by year and borough. Calculated the count
+of healthy stores and farmers’ markets for each borough and year.</p>
+<p>3.6 Joining Healthy Stores/Markets with Overweight Data: Merged the
+store/market counts with the overweight dataset (overweight) using a
+full join on year and borough. Converted the year column to a factor for
+categorical analysis.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
