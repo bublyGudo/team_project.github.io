@@ -1,0 +1,42 @@
+name: "Yay internet!"
+output_dir: "."
+navbar:
+  title: "Home"
+  left: # Define items on the left side of the navbar
+    - text: "Team"
+      href: team.html
+        
+  right: 
+    - text: "Results"
+      menu: # Keep the dropdown menu structure
+        - text: "Store Density vs Household Income"
+          href: store_density_and_household_income.html
+        - text: "Store Density vs Overweight Percentage"
+          href: store_overweight_regression.html
+        - text: "Pendemic Impact On Stores"
+          href: pendemic_impact_on_stores.html
+    - text: "Walkability"
+      menu:
+        - text: "ShinyApp: Walkability"
+          href: https://bublygudo.shinyapps.io/walkable/
+        - text: "Walkability Summary"
+          href: walkability_summary.html
+    - text: "Data Sources"
+      menu:
+      - text: "Original Datasets"
+        href: original_datasets.html
+      - text: "Data Cleaning"
+        href: data_cleaning.html
+    - text: "Project Report"
+      href: project_report.html
+    - icon: fa-envelope fa-lg
+      href: mailto:fw2394@cumc.columbia.edu, cm3341@cumc.columbia.edu, tc3326@cumc.columbia.edu, scs2267@cumc.columbia.edu, zw2975@cumc.columbia.edu
+    - icon: fa-github fa-lg
+      href: https://github.com/bublyGudo/team_project.github.io
+output:
+  html_document:
+    theme: readable
+
+# 1. I can create a dropdown list in this file.
+# 2. I can change the positions of tabs in my website using this file.
+# 3. I can change themes of the website by changing the last code "theme:"(ShinyThemes Gallery: https://rstudio.github.io/shinythemes/)
