@@ -1,0 +1,74 @@
+---
+title: "Your Guide to Food Shopping in NYC: Eat Well, Live Better! "
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
+```
+
+*Zhiyu Wei (zw2975), Carolina Montes Garcia (cm3341), KK Chen (tc3326), Fang Wang (fw2394), Sonum Siddalingaiah (scs2267)*
+
+<br><br> 
+
+### Motivation
+
+
+<br><br>
+
+### Related work
+
+
+<br><br>
+
+### Initial questions
+
+We began by brainstorming some initial questions to guide data cleaning and merging:
+
+1. How accessible are healthy food stores?
+
+    a. Are they within a walkable distance?
+    b. How far are they from subway stations, and how many subway stations are within a walkable distance?
+    c. How concentrated are they in each neighborhood?
+    
+
+2. How does the food quality compare for each store in each neighborhood? 
+
+3. How about the standard grocery price (such as buying bread, milk, eggs etc.) 
+
+4. How does the density of healthy food stores compare to the overweight and diabetes rate in each  borough？ 
+
+<br><br>
+
+Due to the limitations and the need for coherence with the general research question, we modified our questions to be:
+
+1. What is the association between density (number of stores) of general food stores /pantries and household income in the year 2020?
+
+2. Is increased density (nunmber of stores) of healthy stores associated with lower rates of overweight by borough? 
+3. What is the walking distance from the subway to the groceries?
+
+
+<br><br>
+
+### Data
+
+##### This can be directly copy and paste from data source page
+
+<br><br>
+
+### Exploratory analysis
+
+<br><br>
+
+### Additional analysis
+
+<br><br>
+
+### Discussion
+
+<br><br>
+
+### References
+
+1. 
+2. 
+3. 
