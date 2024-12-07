@@ -1,0 +1,33 @@
+---
+title: "Team"
+output:
+  html_document:
+    toc: false
+    toc_float: false # change toc: false and toc_float: false, so I remove the menu bar on the left since I don't need it.
+---
+
+Welcome to our site—so glad you’re here! We’re a lively bunch of students from Columbia University’s Mailman School of Public Health, each bringing our unique flair from different backgrounds and programs. What unites us? A shared mission to dive deep into applied biostatistics, master the art of data science, and champion food access and justice in NYC. Think of us as your friendly neighborhood data explorers, blending science with curiosity to uncover the secrets of Healthy Stores and make healthy, affordable food accessible for everyone in the Big Apple. Let’s make a healthier, fairer NYC together! 🍎🗽
+
+
+<img src="carolina.jpg" style="width:20%">
+
+Carolina Montes Garcia is a project manager at Columbia University’s NIEHS P30 Center for Environmental Health and Justice, where she fosters collaborations between researchers and community partners in Northern Manhattan. Her work experience spans managing clinical research projects, developing minority mental health outreach programs, and advancing urban environmental justice. She is passionate about the intersections of climate and health,  specifically the health impacts of climate displacement. An artist in her spare time, Carolina explores identity, internal states, and nature through oil painting, watercolor, and mixed media, blending her love of the arts with her commitment to public health.
+
+
+<img src="fang.jpg" style="width:20%"> 
+
+Fang Wang is a student specializing in Environmental Health Data Science. With a passion for understanding the intersections of environmental factors and public health, Fang engages in projects that explore topics such as food justice, air quality, and autism prevalence. Their work often involves advanced data analysis, spatial mapping, and interdisciplinary approaches, blending scientific inquiry with philosophical reflection. Fang’s academic pursuits reflect a commitment to promoting healthier, more sustainable communities through data-driven insights.
+
+
+<img src="KK.jpg" style="width:20%"> 
+
+KK is a second year MPH student in the Epidemiology department with a certificate in Applied Biostatistics and Public Health Data Science. She likes playing tennis, reading novels and watching variety shows.
+
+
+<img src="Sony.jpg" style="width:20%"> 
+
+Sonum (Sony) Siddalingaiah is pursuing an MPH in Health Policy and Management with a certificate in Chronic Disease Epidemiology. As someone who is passionate about community health work, she wanted to gain more technical skills to address the needs of at risk populations. She is excited to be working on this project to learn more about the intersection between food access, social determinants, and health outcomes. 
+
+<img src="audrey.jpg" style="width:20%"> 
+
+Zhiyu (Audrey) Wei is a second-year master's student at Columbia University's Mailman School of Public Health. Audrey majored in biochemistry during her undergraduate studies and transitioned to biostatistics for her master's education.
