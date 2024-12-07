@@ -130,7 +130,8 @@ What is the association between density (# of stores) of general food stores and
   This is the Spearman rank correlation coefficient, indicating a moderate negative relationship between food store density and household median income.
   
 * Conclusion: There is a statistically significant moderate negative correlation between food store density and household median income (ρ=−0.5077, p<0.001). This indicates that ZIP codes with higher food store density tend to have lower household incomes.
-  
+
+<br>  
   
 ## Access to Healthy Food Stores
   
@@ -138,17 +139,133 @@ What is the association between density (# of stores) of general food stores and
 ### Question: Does the number of healthy food stores/farmers markets vary by median household income in each zip code for the year 2020?
   
   
-### Interactive Map: Visualizing Food Store Clusters
-  
-  Let's begin by create median income brackets for choropleth visualization.
+#### Data import and cleaning
 
-We added income brackets to the `healthy_stores_hh_data` dataset so we can use income bracket as a color in the chloropleth legend. Brackets were pulled from the 2023 US Census Income Report, Table 2-A.
+Load shapefiles for NY zip codes to use later on.
+```{r}
+ny_zipcodes = st_read("./data/NY_zip.shp")
+```
 
+Load dataset with latitude and longitude. Filter for year 2020. Notice that there are a few missing latitudes and longitudes. I will find a way to generate these since our dataset is already small '254'.
+
+```{r}
+healthy_stores_2020 = 
+  read.csv("./data/stores_farmer_market.csv",  
+  na = c("NA", "."))%>%
+  filter(year == "2020")
+```
+
+Filter out observations with missing long and lat. Use `tinygeocoder` to fill in missing longitudes and latitudes.
 
 ```{r}
 
-healthy_stores_hh_data = read_csv("./data/healthy_stores_hh_data.csv")
+missing_long_lat = healthy_stores_2020 %>%
+  filter(is.na(longitude) | is.na(latitude))
 
+
+filled_data = missing_long_lat %>%
+  geocode(
+    address = address,
+    method = "osm",
+    lat = latitude,
+    long = longitude
+  ) %>% 
+  select(-latitude...6, -longitude...7) %>%
+  rename(
+    latitude = latitude...8,
+    longitude = longitude...9
+  )
+
+```
+
+Merge back into the original dataset.  
+```{r}
+healthy_stores_2020 = healthy_stores_2020 %>%
+  rows_update(filled_data, by = "address")
+
+```
+
+Now we have longitude and latitude for all observations in 2020.
+
+
+Convert dataset to spatial points
+
+```{r}
+stores_sf = 
+  st_as_sf(healthy_stores_2020, coords = c("longitude", "latitude"), crs = st_crs(ny_zipcodes))
+```
+
+Perform a spatial join
+
+```{r}
+stores_with_zipcodes = st_join(stores_sf, ny_zipcodes)
+```
+
+Export results as csv file
+
+```{r}
+healthy_stores_with_zips = stores_with_zipcodes %>%
+  mutate(longitude = st_coordinates(.)[, 1],
+         latitude = st_coordinates(.)[, 2]) %>%
+  st_drop_geometry() %>% 
+select(healthy_store_market, borough, year, address, longitude, latitude, ZCTA) %>% 
+  rename(zip = ZCTA) %>% 
+  mutate(zip = trimws(as.character(zip))) %>% 
+  drop_na()
+
+write.csv(healthy_stores_with_zips, "healthy_stores_with_zips.csv", row.names = FALSE)
+
+```
+
+
+Import and clean household income data for 2020
+
+```{r}
+hh_income_2020 = 
+  read_csv("./data/Household Income_NYC_by zip_2020.csv", skip=1,
+  na = c("-", "**", "***", "N")) %>% 
+  janitor::clean_names() %>% 
+  select(geographic_area_name,estimate_households_mean_income_dollars, estimate_households_median_income_dollars) %>% 
+  rename(zip = geographic_area_name, 
+         est_mean_income = estimate_households_mean_income_dollars,
+         est_median_income = estimate_households_median_income_dollars) %>% 
+  mutate(zip = gsub("^ZCTA5", "", zip))%>%
+  mutate(zip = trimws(as.character(zip))) %>% 
+  drop_na()
+
+write.csv(hh_income_2020, "hh_income_2020.csv", row.names = FALSE)
+```
+
+
+Merge healthy stores dataset with zip codes and household income data for 2020. I removed any observations from "Staten Island" as they are few. Additionally, I suspect that the number of stores within a zip code may not be indicative of access to healthy food stores, since a main mode of transportation in State Island is by car. Our analyses about NYC are based on an assumption that most people are accessing their healthy foods via some form of public transportation. 
+
+```{r}
+healthy_stores_hh_data = left_join(healthy_stores_with_zips, hh_income_2020, by = "zip")
+
+healthy_stores_hh_data = 
+  healthy_stores_hh_data %>%
+  mutate(
+    est_median_income = gsub("[^0-9.]", "", est_median_income),
+    est_mean_income = gsub("[^0-9.]", "", est_mean_income)
+  ) %>%
+  mutate(
+    est_median_income = as.numeric(est_median_income),  
+    est_mean_income = as.numeric(est_mean_income)
+  ) %>%
+  filter(borough != "Staten Island") %>% 
+  drop_na()
+
+write.csv(healthy_stores_hh_data, "healthy_stores_hh_data.csv", row.names = FALSE)
+
+```
+
+### Interactive Map: Visualizing Food Store Clusters
+
+Let's begin by create median income brackets for choropleth visualization.
+
+We added income brackets to the `healthy_stores_hh_data` dataset so we can use income bracket as a color in the chloropleth legend. Brackets were pulled from the 2023 US Census Income Report, Table 2-A.
+
+```{r}
 healthy_stores_hh_data = 
   healthy_stores_hh_data %>%
   mutate(
@@ -178,7 +295,7 @@ Using leafleft, we can visualize clustering of stores in zip codes based on medi
 Load shapefile for NYC zip codes to prepare for mapping.
 
 ```{r}
-nyc_shapefile = st_read("./data/NY_zip.shp")
+nyc_shapefile = st_read("data/NY_zip.shp")
 nyc_shapefile$ZCTA = as.character(nyc_shapefile$ZCTA)
 healthy_stores_hh_data$zip = as.character(healthy_stores_hh_data$zip)
 
@@ -275,7 +392,6 @@ model_tidy %>%
     caption = "Tidy Summary of Linear Model: Number of Stores vs. Median Income"
   )
 ```
-
 We see a non-signification p-value of 0.09.
 
 However, is it appropriate to use a linear model in this case? Let's check assumptions of linearity, normality, and homoscedasticity for median income and number of stores.
@@ -350,11 +466,9 @@ ggplot(data = data.frame(Residuals = residuals_data), aes(x = Residuals)) +
   )
 
 ```
-
 The histogram of the residuals corroborates much of what we had already seen. The distribution of the residuals is right skewed, likely due to the outliers we observed. We may venture to hypothesize that those outliers are related to the three clusters we saw in the chloropleth for zip codes in Harlem, the Bronx, and Manhattan.
 
 Finally, we can look at the scatterplot of the linear model for further visual inspection. 
-
 ```{r}
 
 ggplot(stores_by_zip_unique, aes(x = median_income, y = num_stores)) +
@@ -368,7 +482,6 @@ ggplot(stores_by_zip_unique, aes(x = median_income, y = num_stores)) +
   )
 
 ```
-
 There are several outliers on the lower end of median household incomes where we observe high number of stores. Furthermore, we can see that we have many more observations for incomes below $150,000.00 than above. This difference in number of observations at different median income levels could be contributing to the a difference in variance across the distribution. Overall, we can conclude that a linear regression model is not appropriate for this dataset due to several limitations including a small sample size, few observations available for certain income brackets, and the outliers observed at the lower end of the income spectrum. 
 
 
@@ -394,14 +507,13 @@ knitr::kable(
 )
 
 ```
-
 We can see here that in the Brooklyn zip code 11206, there are 45 healthy food stores. This zip code falls within the Williamsburg neighborhood. It is following by the Bronx zip code 10453 with 35 healthy food stores. This zip code falls within the Morris Heights neighborhood. These two observations align with the clusters we saw earlier in the map, as those clusters correspond to these two zip codes. 
 
 
 The disproportionately high number of healthy food stores in Williamsburg (11206) and Morris Heights (10453) may be influenced by several factors. These neighborhoods could be beneficiaries of targeted public health initiatives or grants aimed at improving food access, such as farmers' markets or NYC-specific programs. Gentrification in Williamsburg has likely shifted demographics, attracting wealthier residents who demand more health-conscious options, while community advocacy efforts in both areas may have supported the establishment of healthy food markets and urban agriculture projects. 
 
 
-### Additional Analysis: Non-Parametric Test - Spearman Rank Correlation
+### Additional Analysis
 
 Given the assumptions violations for linear regression, we decided to instead utilize a Spearman Ranked correlation to capture the non-linear relationship between number of stores and median household income. 
 
