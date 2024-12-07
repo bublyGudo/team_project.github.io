@@ -1,0 +1,177 @@
+---
+title: "Healthy Stores/Markets & Overweight"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r library, include=FALSE}
+library(tidyverse)
+
+theme_set (theme_bw() + theme (
+    legend.position =  "bottom"
+  ))
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+
+```{r data, fig.width=10, fig.height=8}
+# load "stores" dataset and cleaning up:
+stores = read.csv("./data/Recognized_Shop_Healthy_Stores_20241116.csv") |> 
+  janitor::clean_names() |> 
+  mutate(borough = case_when(
+    borough == "New York" ~ "Manhattan",
+    TRUE ~ borough
+  )) |> 
+  rename(year = year_awarded, healthy_store_market = store_name) |> 
+  distinct(latitude, longitude,.keep_all = TRUE) |> 
+  select (healthy_store_market, borough, year)
+
+# load "farmer markets" data and cleaning up:
+farmer_market = read.csv("./data/farmers_market_data.csv") |> 
+  janitor::clean_names() |> 
+  distinct(latitude, longitude,.keep_all = TRUE) |> 
+  select(farmers_market, borough, year) |> 
+  rename(healthy_store_market = farmers_market) 
+
+# bind the "stores" and "farmer_marke":
+stores_farmer_market = rbind(stores, farmer_market)
+
+# load overweight data:
+overweight = read.csv("./data/Overweight by boroughs.csv") |> 
+  separate (Percent, into = c("percent", "low_confidence", "high_confidence"))|> 
+  mutate(percent = as.numeric(percent)) |> 
+  janitor::clean_names() |> 
+  rename (borough = geography, year = time_period, overweight_percentage = percent) |> 
+  select(overweight_percentage, borough, year)
+
+# calculate the number store/market in each borough in each year:
+counts = stores_farmer_market |> 
+  drop_na() |> 
+  group_by(year, borough) |> 
+  summarise(count = n(), .groups = "drop")
+
+## join healthy store/market and overweight together
+store_market_overweight = full_join (counts, overweight, by = join_by(year, borough)) |> 
+  mutate(year = as.factor(year))
+
+write.csv(store_market_overweight, "./data/store_market_overweight.csv")
+```
+
+# Exploratory Data Analysis
+```{r EDA, fig.width=10, fig.height=8}
+# The Number of Healthy Stores/Farmer Markets in Each Borough
+  store_market_overweight |>
+    group_by(borough) |> 
+    summarise(sum = sum(count, na.rm = TRUE)) |> 
+    ggplot(aes(x = borough, y = sum, fill = borough)) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = "Borough",
+    y = "Number",
+    title = "The Number of Healthy Stores/Farmer Markets in Each Borough") +
+  theme(legend.position = "none")+
+  theme(plot.title=element_text(size=22, face="bold")) +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+*1.Brooklyn has the highest number of healthy stores and farmer markets, followed by the Bronx and Manhattan. Queens and Staten Island have significantly fewer healthy stores and farmer markets.*
+
+*2. The result is what we expected. Larger boroughs with higher population densities like Brooklyn and the Bronx are expected to have more establishments. Staten Island’s lower density explains its fewer establishments.*
+
+*3. Disparity in the availability of healthy food resources is evident. Policy efforts should target underserved boroughs (e.g., Staten Island and Queens) to improve access to healthy food options.*
+
+
+```{r overweight, fig.width=10, fig.height=8}
+# Overweight Percentage Changes by Year in Each Borough
+  store_market_overweight |>
+  filter(year !=2023) |> 
+  ggplot(aes(x = as.numeric(year), y = overweight_percentage, color = borough)) +
+  geom_point() + 
+  geom_smooth(method = "loess", se = FALSE) +
+  scale_x_continuous(
+    breaks = unique(as.numeric(store_market_overweight$year)),  # Ensure all years are displayed
+    labels = unique(store_market_overweight$year)  # Keep the labels as regular years
+  ) +
+  labs(
+    x = "Year",
+    y = "Overweight Percentage (%)",
+    color = "Borough",
+    title = "Overweight Percentage Changes by Year in Each Borough"
+  ) +
+  theme(plot.title=element_text(size=24, face="bold")) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+*1. The Bronx and Staten Island have the highest overweight percentages, peaking around 70%. Manhattan consistently shows the lowest overweight percentages. Overweight percentages have generally declined since 2017–2018.*
+
+*2. The result is what we expected. Disparities align with socioeconomic and geographic differences. Affluent areas like Manhattan are more likely to support healthier lifestyles, while areas like the Bronx face systemic challenges.*
+
+*3. Declining overweight percentages may reflect the impact of health initiatives. Borough-specific interventions are necessary to address persistently high rates in the Bronx and Staten Island.*
+
+
+# Linear Plot
+```{r linear, fig.width=10, fig.height=8}
+# Plot: Number of Healthy Stores/Farmer Markets and Overweight Percentages
+
+store_market_overweight |> 
+  na.omit() |> 
+  ggplot(aes(x = count, y = overweight_percentage)) +
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  labs(
+    title = "Association Between The Number of Healthy Stores/Farmer Markets and Overweight Percentages",
+    x = "Overweight Percentage (%)",
+    y = "Number of Healthy Stores/Farmer Markets"
+  ) +
+  theme_minimal()+
+  theme(plot.title=element_text(size=14, face="bold")) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+*The plot suggests a negative association between the overweight percentage and the number of healthy stores or farmer markets. Regions with a higher overweight percentage tend to have fewer healthy stores or farmer markets on average.*
+
+
+# Linear Regression Model
+```{r regression, fig.width=10, fig.height=8}
+model = lm(overweight_percentage ~ count, data = store_market_overweight)
+
+summary(model) |> 
+  broom::tidy() |>
+  knitr::kable(caption = "Association Between The Number of Healthy Stores/Farmer Markets and Overweight Percentages")
+```
+
+*1.While the coefficient for count (-0.05) suggests a slight negative relationship between the number of healthy stores/farmer markets and overweight percentages, the relationship is weak and not statistically significant.*
+
+*2.The large p-value (0.475) indicates that the variability in the data may overshadow the effect of healthy store availability on overweight prevalence.*
+
+*3.Other factors may play a more significant role in explaining the variation in overweight percentages.*
+
+# Risidual Plot
+```{r residuals, fig.width=10, fig.height=8}
+# Extract residuals
+residuals = resid(model)
+
+# Extract fitted values
+fitted_values = fitted(model)
+
+# Create the residuals plot
+plot(fitted_values, residuals,
+     xlab = "Fitted Values",
+     ylab = "Residuals",
+     main = "Residuals vs. Fitted Values")
+abline(h = 0, col = "red", lty = 2)
+```
+
+*The residual plot shows residuals scattered reasonably around the horizontal line at 0 with no obvious patterns, suggesting: The linearity assumption is likely met.*
