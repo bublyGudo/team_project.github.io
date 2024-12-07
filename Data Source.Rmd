@@ -1,0 +1,36 @@
+---
+title: "NYC Food Access: Behind the Scenes"
+output: 
+  html_document:
+    code_folding: hide
+    always_allow_html: true
+---
+<br><br>
+
+### Introduction to Our Data
+
+The data from this project was collected from the [Recognized Shop Healthy Stores](https://data.cityofnewyork.us/Health/Recognized-Shop-Healthy-Stores/ud4g-9x9z/about_data), ran by the 
+
+<br><br>
+
+```{r setup, include = FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
+
+library(tidyverse)
+```
+
+```{r}
+# add our datasets
+```
+
+
+### Data Dictionary
+
+The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/AwPods/NYCfoodAccess.git).
+
+
+Here should be some introduction to our variables
+
+
+
+
