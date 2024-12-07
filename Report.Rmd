@@ -1,5 +1,5 @@
 ---
-title: "Your Guide to Food Shopping in NYC: Eat Well, Live Better! "
+title: "Your Guide to Food Shopping in NYC: Eat Well, Live Better!"
 ---
 
 ```{r setup, include=FALSE}
@@ -10,17 +10,23 @@ knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 
 <br><br> 
 
-### Motivation
+## Motivation
 
+*Nearly 1.3 million New Yorkers are experiencing food insecurity. Many of these individuals not only experience lack of food availability, but lack of access to nutritious and healthy food. Food insecure households consistently report decreased fruit and vegetable intake, as there are few options available at their local grocery stores and bodegas for affordable produce. As such, food insecure individuals were 15.3% more likely to develop chronic diseases such as coronary heart disease, hypertension, and obesity.*
+
+<br>
+
+*As public health professionals who are passionate about addressing health disparities, we wanted to explore the relationship between social determinants, food access, and diet-related health outcomes. The goal of our project was to examine associations between household income, walkability, overweight, and food store locations in New York City. We analyzed these associations for both regular retail food stores and healthy food stores to identify if there were differences in store availability and health outcomes between stores with healthier options and stores without healthy options. Through our project, we aimed to provide a nuanced picture of food access in New York City.*
 
 <br><br>
 
-### Related work
+## Related work
 
+*This project was inspired by Sony’s APEx (practicum) with [City Harvest](https://www.cityharvest.org/), a non-profit organization that provides access to healthy produce for low-income New Yorkers. Through her work, Sony saw how the populations City Harvest served were reliant on their bi-weekly mobile markets because they lacked access to affordable healthy food options. Many simply had few grocery stores near their homes or had limited access to healthy food at available stores. Having consistent access to produce within their neighborhood was crucial for helping these clients manage chronic diseases and maintain their health. Inspired by Sony’s work, our team decided to put our public health skills to the task and examine the intersection between social determinants, accessibility of stores, and chronic disease outcomes.*
 
 <br><br>
 
-### Initial questions
+## Initial questions
 
 We began by brainstorming some initial questions to guide data cleaning and merging:
 
@@ -49,25 +55,76 @@ Due to the limitations and the need for coherence with the general research ques
 
 <br><br>
 
-### Data
+## Data
 
 ##### This can be directly copy and paste from data source page
 
 <br><br>
 
-### Exploratory analysis
+## Exploratory analysis
+
+<br>
+
+### Maps 
+
+#### Landing page
+
+*1. Interactive map on landing page is to provide an intuitive visual representation of the geographic distribution of healthy stores, retail stores, and farmer markets across NYC. The interactive map was created using the leaflet package.*
+
+*2. The map uses CartoDB.Positron tiles background with adjusted transparency (opacity = 0.8) for clarity and aesthetic appeal. Each type of food sources was given a unique color for easy differentiation. Each marker displays detailed information (store name, borough, address, and type) when clicked. Color-coded markers and detailed popups make it easy to identify and explore the locations of different food sources. The use of an interactive map ensures that stakeholders can explore the data in an intuitive, spatial format.*
+
+*3. The map allows users to observe clustering patterns and disparities in access to food-related resources.*
+
+<br>
+
+#### Leaflet Map
+
+*Map of number of healthy food stores by zip code in the four main boroughs of NYC (Manhattan, Brooklyn, Bronx, and Queens) and median income.*
+
+<br>
+
+### Plots 
+
+#### Walking Distance
+
+*1. Scatterplot - Walking Distance Per Zip Code By Borough*
+
+*2. Boxplot - Average Walking Distances in Zip Codes by Borough*
+
+*3. Bar Graph - Average Walking Time in Zip Code in Borough*
+
+*4. Bar Graph - Average Walking Time in Zip Code in Borough for Retail Food Stores and Healthy Food Stores*
+
+<br>
+
+#### Store Density
+
+*1. To compare the number of healthy stores and farmer markets across NYC boroughs. A grouped bar plot was used to summarize and display the total number of food sources in each borough.*
+
+*2. Data was grouped by borough and the counts were summed using sum(count, na.rm = TRUE). X-axis: Boroughs were set as the independent variable. Y-axis: Total counts of healthy stores and farmer markets. Fill Color: Borough-specific colors were used for visual differentiation.*
+
+*3. A bar plot is intuitive for comparing discrete categories (boroughs) and their respective totals.This plot highlights boroughs with the highest and lowest access to healthy stores and farmer markets, emphasizing disparities in resource distribution.*
+
+<br>
+
+#### Overweight Percentage
+
+*1. A scatter plot with loess smoothing lines for each borough was used to display trends. Excluded data for 2023 (filter(year != 2023)) due to incomplete or anomalous data for this year. X-axis: Treated year as a continuous variable (as.numeric(year)) to show trends over time. Displayed all years explicitly using scale_x_continuous() with unique labels for readability. Y-axis: Represented overweight_percentage as the dependent variable. Points and Smoothing Lines: Points: Represent individual borough-year overweight percentages. Smoothing Lines: Added loess (local regression) smoothing to highlight trends for each borough without assuming linearity. Each borough was given a distinct color for differentiation in the visualization.*
+
+*2. Scatter plots with smoothing lines are effective for visualizing trends over time, particularly when the relationships may not be linear.*
 
 <br><br>
 
-### Additional analysis
+## Additional analysis
 
 <br><br>
 
-### Discussion
+
+## Discussion
 
 <br><br>
 
-### References
+## References
 
 1. 
 2. 
