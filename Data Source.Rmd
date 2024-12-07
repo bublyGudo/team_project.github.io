@@ -18,7 +18,7 @@ output:
 
 5. [Overweight Data by Borough (Overweight by boroughs.csv)](https://a816-dohbesp.nyc.gov/IndicatorPublic/data-explorer/overweight/?id=2063#display=summary): Includes statistics on overweight percentages for each NYC borough, along with confidence intervals for the percentages and the year of measurement.
 
-6. [Median Household Income Data by Zip Code](https://data.census.gov/table?g=040XX00US36$8600000_160XX00US3651000): This dataset contains the 
+6. [Median Household Income Data by Zip Code](https://data.census.gov/table?t=Income%20(Households,%20Families,%20Individuals)&g=040XX00US36$8600000_160XX00US3651000): This dataset contains the 
 
 7. [Households by Total Money Income, Race, and Hispanic Origin of Householder: 1967 to 2023](https://www2.census.gov/programs-surveys/demo/tables/p60/282/tableA2.xlsx): We utilized this dataset to identify the income brackets for the household income map. 
 
