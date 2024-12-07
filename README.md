@@ -1,1 +1,3 @@
-# team_project.github.io
+# bublyGudo.github.io
+
+This website is the final project.
