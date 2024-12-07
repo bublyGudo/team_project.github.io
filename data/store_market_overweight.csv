@@ -1,0 +1,56 @@
+"","year","borough","count","overweight_percentage"
+"1","2013","Bronx",37,68
+"2","2014","Bronx",23,67
+"3","2015","Bronx",19,66
+"4","2015","Brooklyn",21,58
+"5","2015","Manhattan",19,47
+"6","2016","Bronx",37,70
+"7","2016","Brooklyn",67,59
+"8","2016","Manhattan",56,45
+"9","2016","Queens",19,56
+"10","2016","Staten Island",4,62
+"11","2017","Bronx",28,69
+"12","2017","Brooklyn",59,58
+"13","2017","Manhattan",33,44
+"14","2017","Queens",2,58
+"15","2017","Staten Island",1,61
+"16","2018","Bronx",52,65
+"17","2018","Brooklyn",67,59
+"18","2018","Manhattan",58,48
+"19","2018","Queens",23,60
+"20","2018","Staten Island",3,67
+"21","2019","Bronx",24,66
+"22","2019","Brooklyn",46,58
+"23","2019","Manhattan",19,47
+"24","2019","Queens",3,59
+"25","2019","Staten Island",1,64
+"26","2020","Bronx",38,67
+"27","2020","Brooklyn",52,55
+"28","2020","Manhattan",25,45
+"29","2020","Queens",3,60
+"30","2022","Bronx",12,65
+"31","2022","Manhattan",3,48
+"32","2023","Bronx",56,NA
+"33","2023","Brooklyn",91,NA
+"34","2023","Manhattan",25,NA
+"35","2023","Queens",18,NA
+"36","2023","Staten Island",2,NA
+"37","2022","Brooklyn",NA,54
+"38","2022","Queens",NA,57
+"39","2022","Staten Island",NA,61
+"40","2021","Bronx",NA,63
+"41","2021","Brooklyn",NA,55
+"42","2021","Manhattan",NA,44
+"43","2021","Queens",NA,54
+"44","2021","Staten Island",NA,56
+"45","2020","Staten Island",NA,68
+"46","2015","Queens",NA,57
+"47","2015","Staten Island",NA,61
+"48","2014","Brooklyn",NA,58
+"49","2014","Manhattan",NA,47
+"50","2014","Queens",NA,59
+"51","2014","Staten Island",NA,65
+"52","2013","Brooklyn",NA,56
+"53","2013","Manhattan",NA,47
+"54","2013","Queens",NA,53
+"55","2013","Staten Island",NA,64
