@@ -23,8 +23,8 @@ navbar:
           href: walkability_summary.html
     - text: "Data Sources"
       menu:
-      - text: "Original Datasets"
-        href: original_datasets.html
+      - text: "Data Sources"
+        href: Data_Sources.html
       - text: "Data Cleaning"
         href: data_cleaning.html
     - text: "Project Report"
