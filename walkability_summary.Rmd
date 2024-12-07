@@ -1,0 +1,202 @@
+---
+title: "Walkability of Stores from Subway Stations"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+Here, we will look at walking distance and walking time from subway stations to both healthy food stores and retail food stores. For the purposes of our analysis, we have omitted Staten Island, as there are few subway stations available in this borough.
+
+
+
+
+```{r setup, message = FALSE, include = FALSE, error=FALSE, warning=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org/"))
+install.packages("geosphere")
+
+library(geosphere)
+library(tidyverse)
+library(readr)
+library(readxl)
+library(plotly)
+library(forcats)
+library(ggplot2)
+```
+
+
+```{r message = FALSE, error=FALSE, warning=FALSE}
+stores_zip = read_csv("./data/all_stores_zip.csv")
+```
+
+
+
+
+## Distances by Borough
+
+First, let us take a look at distances from subway stations to all food stores in each zip code, and see if there are any differences by borough. 
+
+```{r message = FALSE, error=FALSE, warning=FALSE}
+walking_graph = stores_zip %>% 
+  group_by(zipcode, borough, type) %>% 
+  summarise(average_distance = mean(distance)) %>% 
+  arrange(borough)
+
+graph1 =  walking_graph %>% 
+  mutate(
+    zipcode = as.factor(zipcode),
+    average_distance = round(average_distance, digits = 1)
+  ) %>% 
+  ggplot(aes(x = zipcode, y = average_distance, color = borough))+
+  geom_point()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  facet_grid(. ~ borough, scales = "free_x", space = "free")+
+  scale_x_discrete(breaks = as.character(c(10451, 10460, 10472, 11201, 11241,10001,10025,11220,10165, 11101, 11374, 11694)))+
+  labs(
+    title = "Average Distance to Subway by Zipcode",
+    y = "Average Distance (in meters)",
+    x = "Zip Code"
+  )
+                   
+ggplotly(graph1)
+```
+
+Here is a graph that allows you to visualize the average distance from every type of food store to subway station for each borough. If you hover over the points, you can see the zip code of each observation and the average distance in meters. Generally acceptable walking distances to grocery stores is around 400 meters to 800 meters.
+
+From this graph, it appears that Manhattan has lower walking distances for most zip codes than Queens, Brooklyn and the Bronx. There are several high outlier values in Brooklyn and Queens: "11420", "11691", and "11236". 
+
+
+```{r message = FALSE, error=FALSE, warning=FALSE}
+graph2 = walking_graph %>% 
+  mutate(
+    borough = fct_reorder(borough, average_distance)) %>% 
+  plot_ly(y = ~average_distance, color = ~borough, type = "box", colors = "viridis") %>% 
+  layout(
+    title = "Average Distance to Subway by Borough",
+    yaxis = list(title = "Average Distance (in meters)"),
+    xaxis = list(title = "Borough")
+  )
+
+graph2
+
+```
+
+Here is a boxplot to look at the distribution of the average distances by zipcode for each of the boroughs. If you move your cursor over the boxes, you can see the medians, upper and lower quantiles, upper and lower fence, and minimum and maximum values. Manhattan has both a lower median distance (556 meters) and lower and smaller distribution than the other boroughs. Brooklyn has the highest median distance (935 meters), and the largest difference between highest and lowest values. This is due to the outliers that are present at both the higher and lower ends of the box plot. 
+
+
+
+
+## Walking Time to Subways 
+
+Now, lets take a look at how long it would take to walk from subways to food stores. The average person walks at a speed of 1.4 meters per second. Based on this, let us see the average number of minutes it takes to travel from subways to food stores by borough.
+
+```{r message = FALSE, error=FALSE, warning=FALSE}
+
+graph3 = walking_graph %>%
+  mutate(
+    time = (average_distance/1.4)/60) %>% 
+  group_by(borough) %>% 
+    summarise(
+      time = mean(time, na.rm = TRUE)) %>% 
+mutate(
+   time = round(time, digits = 0),
+      borough = fct_reorder(borough, time),
+      label = str_c("average minutes: ", time)
+)
+
+plot_ly(data = graph3, x =~borough, y = ~time, color = ~borough, type = "bar", colors = "viridis", hovertext = ~ label) %>% 
+  layout(
+    title = "Average Walking Time to Subway by Borough",
+    yaxis = list(title = "Average Time (in minutes)"),
+    xaxis = list(title = "Borough")
+  )
+```
+
+This bar graph shows that Manhattan has a much lower average walking time (6 mins) in comparison to Queens (11 mins), the Bronx (12 mins), and Brooklyn (12 mins). This suggests that Manhattan zip codes may, on average, have stations closer to food stores in comparison to the other boroughs. 
+
+
+Now, let's see if there are differences in walking distance to general "retail" food stores and specifically healthy food stores.
+
+```{r message = FALSE, error=FALSE, warning=FALSE}
+graph4 = walking_graph %>%
+  mutate(
+    type = if_else(type=="retail store", type, "healthy store"),
+    time = (average_distance/1.4)/60) %>% 
+  group_by(type, borough) %>% 
+    summarise(
+      time = mean(time, na.rm = TRUE)) %>% 
+mutate(
+   time = round(time, digits = 0),
+      label = str_c("average minutes: ", time)) %>% 
+  ggplot(aes(x = type, y = time, fill = type))+
+  geom_col()+
+  facet_wrap(.~borough)+
+   labs(
+    title = "Average Walking Time for Healthy Stores vs. Regular Stores by Borough",
+    y = "Time (in minutes)",
+    x = "Borough"
+  )
+
+ggplotly(graph4)
+
+```
+
+It appears that differences in walking time from subways is similar between healthy and retail food stores in the Bronx, Brooklyn, and Manhattan. In Queens, the walking time is slightly lower for healthy stores (9 minutes) in comparison to retail stores (11 minutes). It appears that accesibility of healthy stores by subway is not much different than for retail food stores at the borough level.
+
+
+
+
+But are there specific zip codes within certain boroughs that have disproportionately higher or lower walking distances for retail food stores or healthy food stores? Let us visualize which zip codes and boroughs have the 5 highest and lowest walking distances for both retail food stores and healthy food stores.
+
+
+## Highest Walking Distances
+
+```{r}
+table = walking_graph %>%
+  mutate(
+    type = if_else(type=="retail store", type, "healthy store"),
+    time = (average_distance/1.4)/60) %>% 
+  arrange(type) %>% 
+  group_by(type) %>% 
+  filter(min_rank(desc(average_distance)) < 6) %>% 
+  select(type, everything()) %>% 
+  knitr::kable(digits = 1)
+
+table
+```
+
+
+
+## Lowest Walking Distances
+```{r}
+table2 = walking_graph %>%
+  mutate(
+    type = if_else(type=="retail store", type, "healthy store"),
+    time = (average_distance/1.4)/60) %>% 
+  arrange(type) %>% 
+  group_by(type) %>% 
+  filter(min_rank(average_distance) < 6) %>% 
+  select(type, everything()) %>% 
+  knitr::kable(digits = 1)
+
+table2
+```
+
+
+Based on these tables, we can see that zip codes with the highest walking distance to healthy and retail food stores are concentrated in Brooklyn and the Bronx. The zip codes with the lowest walking distance are concentrated in Manhattan and Brooklyn. It appears that Manhattan has most of the zip codes with the lowest walking distances from all food stores to subways, and the Bronx has most of the zip codes with the highest walking distances from all food stores to subways. This may be because Manhattan has more than twice as many subway stations as the Bronx, and therefore it is easier to access public transport that is located near food stores. 
+
+For healthy food stores, it appears that Brooklyn has several zip codes for both the highest and lowest walking distances. This indicates that there may be disparities among Brooklyn zip codes in accessing healthy food stores. Some zip codes may have greater access to subway stations nearby healthy food stores in comparison to other neighborhoods in Brooklyn. As we saw in both the scatter plot and the box plot above, there seem to be several zip codes that are either disproportionately high or disproportionately low for travel distances. It appears that there are major differences in accesibility of food stores by subway for several specific zip codes in Brooklyn.
+
+
+Perhaps additional analyses must be done to explore the relationship between accessibility of public transport and food access in New York!
+
+
+Want to see which food stores are close to your local subway line? Check out our dashboard!
+
+[ShinyApp: Walkability](https://bublygudo.shinyapps.io/walkable/)
+
+
+

@@ -6,6 +6,13 @@ output:
 ---
 <br><br>
 
+
+### Data Sources
+
+The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/bublyGudo/team_project.github.io).
+
+<br>
+
 ### Introduction to Our Datasets
 
 1. [Recognized Shop Healthy Stores (20241116)](https://data.cityofnewyork.us/Health/Recognized-Shop-Healthy-Stores/ud4g-9x9z/about_data): Bodegas and grocery stores in Shop Healthy NYC's Retail Challenge work to increase healthy food availability, promotion, and visibility by meeting specific criteria such as offering low-sodium options, removing unhealthy ads, and placing healthy items prominently. Stores that implement these changes and maintain them for at least one month receive recognition from the Borough President's Office. The list of recognized stores is based on staff-observed checklists, though long-term maintenance of changes is not currently monitored. It contains data on recognized healthy stores. Columns include store name, borough, street address, latitude, longitude, and year awarded.
@@ -18,17 +25,15 @@ output:
 
 5. [Overweight Data by Borough (Overweight by boroughs.csv)](https://a816-dohbesp.nyc.gov/IndicatorPublic/data-explorer/overweight/?id=2063#display=summary): Includes statistics on overweight percentages for each NYC borough, along with confidence intervals for the percentages and the year of measurement.
 
-6. [Median Household Income Data by Zip Code](https://data.census.gov/table?g=040XX00US36$8600000_160XX00US3651000): This dataset contains the 
+6. [Median Household Income Data by Zip Code](https://data.census.gov/table?t=Income%20(Households,%20Families,%20Individuals)&g=040XX00US36$8600000_160XX00US3651000): This dataset from the U.S. Census Bureau provides income data for households, families, and individuals in specific geographic regions, including New York State and New York City. It includes detailed statistics on income distribution, medians, and other income-related metrics to help analyze economic conditions and disparities across these areas.
 
 7. [Households by Total Money Income, Race, and Hispanic Origin of Householder: 1967 to 2023](https://www2.census.gov/programs-surveys/demo/tables/p60/282/tableA2.xlsx): We utilized this dataset to identify the income brackets for the household income map. 
 
-8. [NYC zip code shapefile]()
+8. [NYC Zip Code Shapefile](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html): Shapefile datasets were utilized to geocode the missing zip codes.
+
 <br><br>
 
-
-### Data Sources
-
-The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/bublyGudo/team_project.github.io). 
+ 
 
 
 

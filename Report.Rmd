@@ -117,7 +117,6 @@ Due to the limitations and the need for coherence with the general research ques
 
 ## Additional analysis
 
-*Most 
 Spearman's rank test: household income and store density of healthy food stores
 
 T-test for the pandemic impact on store density by borough
@@ -134,6 +133,5 @@ Spearman's rank test: household income for retail food stores
 
 ## References
 
-1. 
-2. 
-3. 
+1. [USDA: Food Insecurity, Chronic Disease, and Health Among Working-Age Adults](https://www.ers.usda.gov/webdocs/publications/84467/err-235.pdf) 
+
