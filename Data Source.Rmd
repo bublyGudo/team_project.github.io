@@ -2,34 +2,34 @@
 title: "NYC Food Access: Behind the Scenes"
 output: 
   html_document:
-    code_folding: hide
     always_allow_html: true
 ---
 <br><br>
 
-### Introduction to Our Data
+### Introduction to Our Datasets
 
-The data from this project was collected from the [Recognized Shop Healthy Stores](https://data.cityofnewyork.us/Health/Recognized-Shop-Healthy-Stores/ud4g-9x9z/about_data), ran by the 
+1. [Recognized Shop Healthy Stores (20241116)](https://data.cityofnewyork.us/Health/Recognized-Shop-Healthy-Stores/ud4g-9x9z/about_data): Bodegas and grocery stores in Shop Healthy NYC's Retail Challenge work to increase healthy food availability, promotion, and visibility by meeting specific criteria such as offering low-sodium options, removing unhealthy ads, and placing healthy items prominently. Stores that implement these changes and maintain them for at least one month receive recognition from the Borough President's Office. The list of recognized stores is based on staff-observed checklists, though long-term maintenance of changes is not currently monitored. It contains data on recognized healthy stores. Columns include store name, borough, street address, latitude, longitude, and year awarded.
 
+2. [Farmers Market Data](https://data.cityofnewyork.us/Health/NYC-Farmers-Markets/8vwk-6iz2/about_data) and [Historical Farmers Markets 2009-2020](https://data.cityofnewyork.us/api/views/8vwk-6iz2/files/068952b7-9382-4c1a-b2f2-0393059c54c2?download=true&filename=Historical_FarmersMarkets_2009-2020.xlsx): The 2 datasets have a list of farmers markets across NYC's five boroughs, detailing locations where fresh, locally grown produce is available. Vendors, products, and EBT acceptance vary by venue. The NYC DOHMH Health Bucks program collects this data to create a comprehensive list and map of farmers markets and food box locations, accessible on nyc.gov by searching "farmers markets." They contains details about farmers' markets, such as market name, borough, address, latitude, longitude, and year.
+
+3. [Retail Food Stores](https://data.ny.gov/Economic-Development/Retail-Food-Stores/9a8c-vfzj/about_data): Data on retail food stores, including entity name, street number, street name, borough, latitude, longitude, and other details.
+
+4. [Subway Dataset (subway.csv)](https://p8105.com/data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv): This dataset contains data on NYC subway station locations. Includes station coordinates (latitude and longitude) and potentially other descriptive information.
+
+5. [Overweight Data by Borough (Overweight by boroughs.csv)](https://a816-dohbesp.nyc.gov/IndicatorPublic/data-explorer/overweight/?id=2063#display=summary): Includes statistics on overweight percentages for each NYC borough, along with confidence intervals for the percentages and the year of measurement.
+
+6. [Median Household Income Data by Zip Code](https://data.census.gov/table?g=040XX00US36$8600000_160XX00US3651000): This dataset contains the 
+
+7. [Households by Total Money Income, Race, and Hispanic Origin of Householder: 1967 to 2023](https://www2.census.gov/programs-surveys/demo/tables/p60/282/tableA2.xlsx): We utilized this dataset to identify the income brackets for the household income map. 
+
+8. [NYC zip code shapefile]()
 <br><br>
 
-```{r setup, include = FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 
-library(tidyverse)
-```
+### Data Sources
 
-```{r}
-# add our datasets
-```
+The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/bublyGudo/team_project.github.io). 
 
-
-### Data Dictionary
-
-The raw dataset we obtained and our cleaned datasets that were used for all analyses and data visualization, can be found [here](https://github.com/AwPods/NYCfoodAccess.git).
-
-
-Here should be some introduction to our variables
 
 
 

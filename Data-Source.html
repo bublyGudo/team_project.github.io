@@ -30,7 +30,6 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
@@ -219,9 +218,6 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
 
 
@@ -267,7 +263,7 @@ $(document).ready(function () {
       <a href="store_overweight_regression.html">Store Density vs Overweight Percentage</a>
     </li>
     <li>
-      <a href="pendemic_impact_on_stores.html">Pandemic Impact On Stores</a>
+      <a href="pendemic_impact_on_stores.html">Pendemic Impact On Stores</a>
     </li>
   </ul>
 </li>
@@ -279,7 +275,7 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="https://bublygudo.shinyapps.io/shiny_walkability/">ShinyApp: Walkability</a>
+      <a href="https://bublygudo.shinyapps.io/walkable/">ShinyApp: Walkability</a>
     </li>
     <li>
       <a href="walkability_summary.html">Walkability Summary</a>
@@ -323,14 +319,6 @@ $(document).ready(function () {
 
 <div id="header">
 
-<div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
-
 
 
 <h1 class="title toc-ignore">NYC Food Access: Behind the Scenes</h1>
@@ -339,20 +327,66 @@ $(document).ready(function () {
 
 
 <p><br><br></p>
-<div id="introduction-to-our-data" class="section level3">
-<h3>Introduction to Our Data</h3>
-<p>The data from this project was collected from the <a
+<div id="introduction-to-our-datasets" class="section level3">
+<h3>Introduction to Our Datasets</h3>
+<ol style="list-style-type: decimal">
+<li><p><a
 href="https://data.cityofnewyork.us/Health/Recognized-Shop-Healthy-Stores/ud4g-9x9z/about_data">Recognized
-Shop Healthy Stores</a>, ran by the</p>
-<p><br><br></p>
-<pre class="r"><code># add our datasets</code></pre>
+Shop Healthy Stores (20241116)</a>: Bodegas and grocery stores in Shop
+Healthy NYC’s Retail Challenge work to increase healthy food
+availability, promotion, and visibility by meeting specific criteria
+such as offering low-sodium options, removing unhealthy ads, and placing
+healthy items prominently. Stores that implement these changes and
+maintain them for at least one month receive recognition from the
+Borough President’s Office. The list of recognized stores is based on
+staff-observed checklists, though long-term maintenance of changes is
+not currently monitored. It contains data on recognized healthy stores.
+Columns include store name, borough, street address, latitude,
+longitude, and year awarded.</p></li>
+<li><p><a
+href="https://data.cityofnewyork.us/Health/NYC-Farmers-Markets/8vwk-6iz2/about_data">Farmers
+Market Data</a> and <a
+href="https://data.cityofnewyork.us/api/views/8vwk-6iz2/files/068952b7-9382-4c1a-b2f2-0393059c54c2?download=true&amp;filename=Historical_FarmersMarkets_2009-2020.xlsx">Historical
+Farmers Markets 2009-2020</a>: The 2 datasets have a list of farmers
+markets across NYC’s five boroughs, detailing locations where fresh,
+locally grown produce is available. Vendors, products, and EBT
+acceptance vary by venue. The NYC DOHMH Health Bucks program collects
+this data to create a comprehensive list and map of farmers markets and
+food box locations, accessible on nyc.gov by searching “farmers
+markets.” They contains details about farmers’ markets, such as market
+name, borough, address, latitude, longitude, and year.</p></li>
+<li><p><a
+href="https://data.ny.gov/Economic-Development/Retail-Food-Stores/9a8c-vfzj/about_data">Retail
+Food Stores</a>: Data on retail food stores, including entity name,
+street number, street name, borough, latitude, longitude, and other
+details.</p></li>
+<li><p><a
+href="https://p8105.com/data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv">Subway
+Dataset (subway.csv)</a>: This dataset contains data on NYC subway
+station locations. Includes station coordinates (latitude and longitude)
+and potentially other descriptive information.</p></li>
+<li><p><a
+href="https://a816-dohbesp.nyc.gov/IndicatorPublic/data-explorer/overweight/?id=2063#display=summary">Overweight
+Data by Borough (Overweight by boroughs.csv)</a>: Includes statistics on
+overweight percentages for each NYC borough, along with confidence
+intervals for the percentages and the year of measurement.</p></li>
+<li><p><a
+href="https://data.census.gov/table?g=040XX00US36$8600000_160XX00US3651000">Median
+Household Income Data by Zip Code</a>: This dataset contains
+the</p></li>
+<li><p><a
+href="https://www2.census.gov/programs-surveys/demo/tables/p60/282/tableA2.xlsx">Households
+by Total Money Income, Race, and Hispanic Origin of Householder: 1967 to
+2023</a>: We utilized this dataset to identify the income brackets for
+the household income map.</p></li>
+<li><p><a href="">NYC zip code shapefile</a> <br><br></p></li>
+</ol>
 </div>
-<div id="data-dictionary" class="section level3">
-<h3>Data Dictionary</h3>
+<div id="data-sources" class="section level3">
+<h3>Data Sources</h3>
 <p>The raw dataset we obtained and our cleaned datasets that were used
 for all analyses and data visualization, can be found <a
-href="https://github.com/AwPods/NYCfoodAccess.git">here</a>.</p>
-<p>Here should be some introduction to our variables</p>
+href="https://github.com/bublyGudo/team_project.github.io">here</a>.</p>
 </div>
 
 
@@ -388,11 +422,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
