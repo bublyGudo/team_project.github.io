@@ -117,6 +117,13 @@ Due to the limitations and the need for coherence with the general research ques
 
 ## Additional analysis
 
+*Most 
+Spearman's rank test: household income and store density of healthy food stores
+
+T-test for the pandemic impact on store density by borough
+
+Spearman's rank test: household income for retail food stores
+
 <br><br>
 
 
