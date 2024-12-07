@@ -1,0 +1,129 @@
+---
+title: "Food Access & Food Justice in NYC"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Welcome to Food Sources
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(leaflet)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE,fig.width=10, fig.height=8}
+# load and clean stores dataset:
+stores = read.csv("./data/Recognized_Shop_Healthy_Stores_20241116.csv") |> 
+  janitor::clean_names() |> 
+  mutate(borough = case_when(
+    borough == "New York" ~ "Manhattan",
+    TRUE ~ borough
+  )) |> 
+  rename(year = year_awarded, store_address = street_address) |> 
+  select (store_name, borough, year, store_address, latitude, longitude) |> 
+  distinct(latitude, longitude, .keep_all = TRUE) |> 
+  mutate(type = "healthy store")
+
+# load and clean farmer_market dataset
+farmer_market = read.csv("./data/farmers_market_data.csv") |> 
+  janitor::clean_names() |> 
+  select(farmers_market, borough, year, address, latitude, longitude) |>
+  rename(store_name = farmers_market, store_address = address ) |> distinct(latitude, longitude, .keep_all = TRUE) |> mutate(type = "farmer market")
+
+## correct the wrong longitude for two farmer-markets: Saratoga Farm Stand (from the same dataset) and Morris Heights Farmstand (search online)
+
+# load and clean retail stores dataset
+retail_stores = read.csv("./data/Retail_Food_Stores_clean.csv") |> 
+  janitor::clean_names() |> 
+  mutate(address = paste(street_number, street_name, sep = " ")) |> 
+  rename(store_name = entity_name, store_address = address) |>
+  mutate(year = 2014, type = "retail store") |> 
+  select(store_name, borough, year, store_address, latitude, longitude, type) |> 
+  distinct(latitude, longitude, .keep_all = TRUE)
+
+
+## bind the store and farmer_market together
+stores_markets_retails = rbind(stores, farmer_market, retail_stores) |> 
+  mutate(borough = case_when(
+    borough == "Queen" ~ "Queens",
+    TRUE ~ borough
+  ))
+
+write.csv(stores_markets_retails, "./data/stores_markets_retails.csv")
+
+
+stores_markets_retails|> 
+  filter(!is.na(latitude) & !is.na(longitude)) |>  # Remove rows where latitude or longitude is NA
+  leaflet() |> 
+  addTiles() |>  # Adjust the transparency of the map tiles (0 = fully transparent, 1 = fully opaque)
+  addProviderTiles("CartoDB.Positron", options = providerTileOptions(opacity = 0.8)) |>  # Adjust tile transparency
+  
+  # Add Retail Stores
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude,
+    data = stores_markets_retails|> filter(type == "retail store"),
+    popup = ~paste("<strong>Store Name:</strong>", store_name, "<br>",
+                   "<strong>Borough:</strong>", borough, "<br>",
+                   "<strong>Address:</strong>", store_address, "<br>",
+                   "<strong>Type:</strong>", type),
+    color = "green",
+    fillOpacity = 0.3,
+    radius = 1
+  ) |> 
+
+  
+  # Add Farmer Markets Last (Red)
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude,
+    data = stores_markets_retails|> filter(type == "farmer market"),
+    popup = ~paste("<strong>Store Name:</strong>", store_name, "<br>",
+                   "<strong>Borough:</strong>", borough, "<br>",
+                   "<strong>Address:</strong>", store_address, "<br>",
+                   "<strong>Type:</strong>", type),
+    color = "red",
+    fillOpacity = 0.3,
+    radius = 1
+  ) |> 
+  
+  # Add Healthy Stores
+ addCircleMarkers(
+  lng = ~longitude,
+  lat = ~latitude,
+  data = stores_markets_retails |> 
+    filter(type == "healthy store", !is.na(longitude), !is.na(latitude)),
+  popup = ~paste(
+    "<strong>Store Name:</strong>", store_name, "<br>",
+    "<strong>Borough:</strong>", borough, "<br>",
+    "<strong>Address:</strong>", store_address, "<br>",
+    "<strong>Type:</strong>", type),
+  color = "blue",
+  fillOpacity = 0.3,
+  radius = 1
+) |> 
+  addLegend(
+    position = "bottomright",
+    colors = c("blue", "green", "red"),
+    labels = c("Healthy Stores", "Retail Stores", "Farmer Markets"),
+    title = "Store Types"
+  )
+```
+
+
+## Project Introduction
+
+Our team is diving into the world of Food Access and Food Justice in New York City, armed with data on healthy food stores, farmers' markets, retail shops, and food pantries. We’re on a mission to uncover how the number of these spots connects to things like housing income, how many people are struggling with being overweight, and how easy it is to walk to these places. By piecing together these clues, we’re aiming to spotlight patterns and unfair gaps in food access, all while dreaming of a city where everyone can find healthy food just around the corner.
+
