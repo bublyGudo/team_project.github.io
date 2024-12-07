@@ -1,0 +1,444 @@
+---
+title: "Store Density and Household Income"
+output: 
+  html_document:
+    code_folding: hide
+    always_allow_html: true
+---
+  
+```{r setup, include = FALSE, error = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(tidygeocoder)
+library(tidyverse)
+library(readr)
+library(sf)
+library(leaflet)
+library(scales)
+library(mgcv)
+library(ggfortify)
+
+```
+
+## General Food Store Access
+
+
+### Load the corresponding datasets for household income in 2020 and retail food stores that we will use to represent general food store access in NYC. 
+
+```{r}
+
+# i.	Household income in NYC (pre – 2022) 
+household <- read_csv("./data/household_income_2020(in).csv") %>%
+  mutate(est_median_income = as.numeric(est_median_income))
+
+# ii.	Retail Food Store dataset (2024) 
+food_store <- read_csv("./data/Retail_Food_Stores_clean.csv")
+```
+
+### Questions and variables associated 
+
+What is the association between density (# of stores) of general food stores and household income in the year 2020?
+  
+- Type of plot: Scatterplot and linear regression
+  
+```{r}
+  
+  p2 <- food_store %>%
+    count(zip_code) %>%
+    left_join(household, by = c("zip_code" = "zip")) %>%
+    ggplot(aes(x = n, y = est_median_income)) +
+    geom_point(col = "grey") +
+    geom_smooth(method = "lm", col = "#f0a15f", lwd = 1.2, fill = "#f0cdb1") +
+    scale_y_continuous(breaks = seq(20000, 200000, 40000), labels = scales::comma) +
+    labs(
+      x = "\nGeneral Food Store Density (Number of Food Stores)",
+      y = "Estimated Median Income ($)\n",
+      title = "General Food Stores Density vs. Household Income (2020)"
+    ) +
+    theme_classic()
+  
+  p2
+```
+
+### Check Assumptions
+  
+```{r}
+  # Fit the linear regression model
+  food_store_model <- food_store %>%
+    count(zip_code) %>%
+    left_join(household, by = c("zip_code" = "zip")) %>%
+    lm(est_median_income ~ n, data = .)
+  
+  # Check Linearity and Equal Variance 
+  # Residual vs. Fitted Plot
+  plot(food_store_model, which = 1)
+  
+  # Normality Check
+  hist(residuals(food_store_model), breaks = 20, main = "Histogram of Residuals", xlab = "Residuals")
+  
+  # View the summary of the regression model
+  summary(food_store_model)
+```
+  
+  
+### Additional Analysis: Non-Parametric Test - Spearman Rank Correlation
+  
+* Since the linearity and equal variance is violated from the RVF plot, we use a Spearman rank correlation test to assess the association between food store density and household income. It evaluates the monotonic relationship (increasing or decreasing trend).
+  
+```{r}
+  
+# Check for missing values in the relevant columns
+  food_store_clean <- food_store %>%
+    count(zip_code) %>%
+    left_join(household, by = c("zip_code" = "zip"))
+  
+# Count missing values
+  sum(is.na(food_store_clean$n))
+  sum(is.na(food_store_clean$est_median_income))
+  
+# Remove rows with missing values
+  food_store_clean <- food_store_clean %>%
+    filter(!is.na(n) & !is.na(est_median_income))
+  
+# Spearman Rank Correlation Test
+  spearman_test <- food_store_clean %>%
+    summarize(correlation = cor(n, est_median_income, method = "spearman"))
+  
+  spearman_test
+  
+  # Spearman Correlation with P-value
+  cor_test <- cor.test(food_store_clean$n, food_store_clean$est_median_income, method = "spearman")
+  cor_test
+  
+  ggplot(food_store_clean, aes(x = n, y = est_median_income)) +
+    geom_point(color = "grey") +
+    geom_smooth(method = "loess", color = "blue", fill = "lightblue") +
+    labs(
+      x = "General Food Store Density (Number of Food Stores)",
+      y = "Estimated Median Income ($)",
+      title = "Relationship Between General Food Store Density and Household Income"
+    ) +
+    theme_minimal()
+```
+  
+* P-value:p=7.409×10*−13 
+  This is an extremely small p-value (far below the standard threshold of 0.05), indicating that the correlation is statistically significant.
+  
+* Correlation Coefficient (rho):𝜌= -0.5077
+  This is the Spearman rank correlation coefficient, indicating a moderate negative relationship between food store density and household median income.
+  
+* Conclusion: There is a statistically significant moderate negative correlation between food store density and household median income (ρ=−0.5077, p<0.001). This indicates that ZIP codes with higher food store density tend to have lower household incomes.
+  
+  
+## Access to Healthy Food Stores
+  
+  
+### Question: Does the number of healthy food stores/farmers markets vary by median household income in each zip code for the year 2020?
+  
+  
+### Interactive Map: Visualizing Food Store Clusters
+  
+  Let's begin by create median income brackets for choropleth visualization.
+
+We added income brackets to the `healthy_stores_hh_data` dataset so we can use income bracket as a color in the chloropleth legend. Brackets were pulled from the 2023 US Census Income Report, Table 2-A.
+
+
+```{r}
+
+healthy_stores_hh_data = read_csv("./data/healthy_stores_hh_data.csv")
+
+healthy_stores_hh_data = 
+  healthy_stores_hh_data %>%
+  mutate(
+    est_median_income = as.numeric(est_median_income),
+    income_bracket = cut(
+      est_median_income,
+      breaks = c(0, 15000, 25000, 35000, 50000, 75000, 100000, 150000, 200000, Inf),
+      labels = c(
+        "Under $15,000",
+        "$15,000 to $24,999",
+        "$25,000 to $34,999",
+        "$35,000 to $49,999",
+        "$50,000 to $74,999",
+        "$75,000 to $99,999",
+        "$100,000 to $149,999",
+        "$150,000 to $199,999",
+        "$200,000 and over"
+      ),
+      include.lowest = TRUE
+    )
+  )
+
+```
+
+Using leafleft, we can visualize clustering of stores in zip codes based on median income brackets. This visual inspection may be helpful later when we run analyses. 
+
+Load shapefile for NYC zip codes to prepare for mapping.
+
+```{r}
+nyc_shapefile = st_read("./data/NY_zip.shp")
+nyc_shapefile$ZCTA = as.character(nyc_shapefile$ZCTA)
+healthy_stores_hh_data$zip = as.character(healthy_stores_hh_data$zip)
+
+map_data = nyc_shapefile %>%
+  left_join(healthy_stores_hh_data, by = c("ZCTA" = "zip"))
+
+```
+
+Filter map to only include NYC Boroughs that we care about and create interactive map "Bronx", "Brooklyn", "Manhattan", "Queens". Remove NA values. 
+```{r}
+
+palette = colorFactor(
+  palette = "viridis",
+  domain = map_data$income_bracket
+)
+
+nyc_boroughs = c("Bronx", "Brooklyn", "Manhattan", "Queens")
+
+filtered_map_data = map_data %>%
+  filter(borough %in% nyc_boroughs)
+
+leaflet(data = filtered_map_data) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(
+    fillColor = ~palette(income_bracket),
+    fillOpacity = 0.7,
+    color = "white",
+    weight = 1,
+    popup = ~paste(
+      "ZIP Code:", ZCTA, "<br>",
+      "Median Income: $", comma(est_median_income), "<br>", # Format with commas
+      "Income Bracket:", income_bracket
+    )
+  ) %>%
+  addCircleMarkers(
+    data = healthy_stores_hh_data,
+    lng = ~longitude,
+    lat = ~latitude,
+    radius = 3,
+    color = "red",
+    popup = ~paste(
+      "Store Name:", healthy_store_market, "<br>",
+      "Address:", address
+    )
+  ) %>%
+  addLegend(
+    pal = palette,
+    values = ~income_bracket,
+    title = paste(
+      "Income Brackets (U.S. Census 2023)<br>",
+      "Median Income Data: 2020 Household Income Dataset"
+    ),
+    position = "bottomright"
+  )
+```
+We can see clustering of points in Harlem, Brooklyn, and the Bronx.
+
+
+### Exploratory Analysis
+
+Summarize number of stores by unique zip code and borough combination. 
+```{r}
+stores_by_zip_unique = 
+  healthy_stores_hh_data %>%
+  group_by(zip, borough) %>%
+  summarise(
+    num_stores = n(), 
+    median_income = median(as.numeric(est_median_income), na.rm = TRUE),  
+    mean_income = mean(as.numeric(est_mean_income), na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+There are not many stores per zip code...this might be a problem.
+
+
+Let's begin by fitting a linear model to check a p-value.
+```{r}
+
+model_median_income_zip = lm(num_stores ~ median_income, data = stores_by_zip_unique)
+
+model_summary = summary(model_median_income_zip)
+
+model_tidy = broom::tidy(model_median_income_zip)
+
+model_tidy %>%
+  mutate(
+    estimate = round(estimate, 3),          # Round estimates
+    std.error = round(std.error, 3),        # Round standard errors
+    statistic = round(statistic, 3),        # Round t-statistics
+    p.value = format.pval(p.value, digits = 3)  # Format p-values
+  ) %>%
+  knitr::kable(
+    col.names = c("Term", "Estimate", "Std. Error", "Statistic", "P-value"), 
+    caption = "Tidy Summary of Linear Model: Number of Stores vs. Median Income"
+  )
+```
+
+We see a non-signification p-value of 0.09.
+
+However, is it appropriate to use a linear model in this case? Let's check assumptions of linearity, normality, and homoscedasticity for median income and number of stores.
+
+These tests will validate whether linear regression is appropriate for this relationship. Using `autoplot`, we can quickly visualize residuals (linearity and homoscedasticity check), and a Q-Q plot and histogram (normality check).
+
+Residuals vs. Fitted Plot
+```{r}
+
+ggplot(data = data.frame(
+  Fitted = fitted(model_median_income_zip),
+  Residuals = residuals(model_median_income_zip)
+), aes(x = Fitted, y = Residuals)) +
+  geom_point(color = "blue", alpha = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal() +
+  labs(
+    title = "Residuals vs. Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  )
+
+```
+
+Q-Q Plot
+
+```{r}
+ggplot(data = data.frame(
+  Residuals = residuals(model_median_income_zip)
+), aes(sample = Residuals)) +
+  stat_qq(color = "blue") +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  theme_minimal() +
+  labs(
+    title = "Normal Q-Q Plot of Residuals",
+    x = "Theoretical Quantiles",
+    y = "Sample Quantiles"
+  )
+```
+
+
+In the residuals vs. fitted plot, we can observe clustering on the upper end of the fitted values. Additionally, there is somewhat of a funnel shape with fewer fitted values on the lower end and many fitted values on the upper end. Furthermore, there are three distinct outliers on the upper end with large residuals. These findings hint at a lack of linearity and heteroscedasticity. 
+
+In the Q-Q plot, we can observe that most residual points fall along the dotted line. However, several of the upper residual points fall very far from the line, hinting somewhat at a curve. 
+
+
+Plot histogram of the residuals
+```{r}
+
+
+residuals_data = residuals(model_median_income_zip)
+
+ggplot(data = data.frame(Residuals = residuals_data), aes(x = Residuals)) +
+  geom_histogram(
+    aes(y = ..density..),
+    bins = 20,  # Adjust the number of bins as needed
+    fill = "skyblue",
+    color = "white"
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(mean = mean(residuals_data), sd = sd(residuals_data)),
+    color = "red",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Histogram of Residuals with Normal Curve",
+    x = "Residuals",
+    y = "Density"
+  )
+
+```
+
+The histogram of the residuals corroborates much of what we had already seen. The distribution of the residuals is right skewed, likely due to the outliers we observed. We may venture to hypothesize that those outliers are related to the three clusters we saw in the chloropleth for zip codes in Harlem, the Bronx, and Manhattan.
+
+Finally, we can look at the scatterplot of the linear model for further visual inspection. 
+
+```{r}
+
+ggplot(stores_by_zip_unique, aes(x = median_income, y = num_stores)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  theme_minimal() +
+  labs(
+    title = "Number of Stores vs. Median Income (Assumptions Tested)",
+    x = "Median Income",
+    y = "Number of Stores"
+  )
+
+```
+
+There are several outliers on the lower end of median household incomes where we observe high number of stores. Furthermore, we can see that we have many more observations for incomes below $150,000.00 than above. This difference in number of observations at different median income levels could be contributing to the a difference in variance across the distribution. Overall, we can conclude that a linear regression model is not appropriate for this dataset due to several limitations including a small sample size, few observations available for certain income brackets, and the outliers observed at the lower end of the income spectrum. 
+
+
+To identify our extreme observations (outliers), we have summarized the top and bottom 5 zip codes by number of food stores.
+
+```{r}
+top_bottom_zip_codes = 
+  stores_by_zip_unique %>%
+  arrange(desc(num_stores)) %>%
+  mutate(rank = row_number()) %>%
+  filter(rank <= 5 | rank > (n() - 5)) %>%
+  mutate(
+    rank_group = ifelse(rank <= 5, "Top 5", "Bottom 5"),
+    median_income = dollar(median_income)
+  ) %>%
+  select(zip, borough, num_stores, median_income, rank_group)
+
+knitr::kable(
+  top_bottom_zip_codes %>%
+    arrange(desc(rank_group == "Top 5"), desc(num_stores)),  
+  caption = "Top and Bottom 5 Zip Codes by Healthy Food Store Density",
+  col.names = c("Zip Code", "Borough", "Number of Stores", "Median Income", "Group")
+)
+
+```
+
+We can see here that in the Brooklyn zip code 11206, there are 45 healthy food stores. This zip code falls within the Williamsburg neighborhood. It is following by the Bronx zip code 10453 with 35 healthy food stores. This zip code falls within the Morris Heights neighborhood. These two observations align with the clusters we saw earlier in the map, as those clusters correspond to these two zip codes. 
+
+
+The disproportionately high number of healthy food stores in Williamsburg (11206) and Morris Heights (10453) may be influenced by several factors. These neighborhoods could be beneficiaries of targeted public health initiatives or grants aimed at improving food access, such as farmers' markets or NYC-specific programs. Gentrification in Williamsburg has likely shifted demographics, attracting wealthier residents who demand more health-conscious options, while community advocacy efforts in both areas may have supported the establishment of healthy food markets and urban agriculture projects. 
+
+
+### Additional Analysis: Non-Parametric Test - Spearman Rank Correlation
+
+Given the assumptions violations for linear regression, we decided to instead utilize a Spearman Ranked correlation to capture the non-linear relationship between number of stores and median household income. 
+
+```{r}
+spearman_result = 
+  stores_by_zip_unique %>%
+  summarise(
+    spearman_rho = cor(num_stores, median_income, method = "spearman"),
+    p_value = cor.test(num_stores, median_income, method = "spearman")$p.value
+  )
+
+spearman_result %>%
+  mutate(
+    spearman_rho = round(spearman_rho, 3),  # Round correlation coefficient
+    p_value = format.pval(p_value, digits = 3)  # Format p-value
+  ) %>%
+  knitr::kable(
+    col.names = c("Spearman Correlation (ρ)", "P-value"),
+    caption = "Spearman Correlation Between Number of Stores and Median Income"
+  )
+```
+
+Visualize the correlation 
+
+```{r}
+ggplot(data = stores_by_zip_unique, aes(x = median_income, y = num_stores)) +
+  geom_point(color = "blue", alpha = 0.7) +
+  geom_smooth(method = "loess", color = "red", se = FALSE) +  # LOESS curve for trend
+  theme_minimal() +
+  scale_x_continuous(labels = label_dollar()) +  # Format x-axis as dollars
+  labs(
+    title = "Relationship Between Median Income and Number of Stores",
+    x = "Median Household Income",
+    y = "Number of Stores"
+  )
+
+```
+
+
+Interpretation: While the negative relationship is statistically significant (p-value = 0.006), the weak magnitude of the correlation (ρ = -0.293) suggests that `median_income` alone is not a strong predictor of the number of healthy food stores. Other factors, such as population density, zoning, or transportation, may play more substantial roles.
