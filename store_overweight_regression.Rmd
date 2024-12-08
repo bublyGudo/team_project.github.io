@@ -31,6 +31,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+<img src="markets.jpg" style="width: 100%;">
 
 ```{r data, fig.width=10, fig.height=8, warning = FALSE}
 # Import datasets for regression analysis
@@ -122,7 +123,7 @@ write.csv(store_market_overweight, "./data/store_market_overweight.csv")
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
-*1.Brooklyn has the highest number of healthy stores and farmer markets, followed by the Bronx and Manhattan. Queens and Staten Island have significantly fewer healthy stores and farmer markets.*
+*1. Brooklyn has the highest number of healthy stores and farmer markets, followed by the Bronx and Manhattan. Queens and Staten Island have significantly fewer healthy stores and farmer markets.*
 
 *2. The result is what we expected. Larger boroughs with higher population densities like Brooklyn and the Bronx are expected to have more establishments. Staten Island’s lower density explains its fewer establishments.*
 
@@ -161,7 +162,7 @@ theme(plot.title = element_text(hjust = 0.5))
 
 <br>
 
-### Linear Regression Models - Retail Food Stores and Healthy Food Stores vs. Percentage Overweight
+### Linear Regression Models - Number of Retail Food Stores/ Healthy Food Stores vs. Percentage Overweight
 
 <br>
 
@@ -199,9 +200,9 @@ summary(m1) |>
   knitr::kable(caption = "Association Between The Number of Retail Food Stores and Overweight Percentages")
 ```
 
-*1.The relationship between number of retail food store and percentage of overweight is significant (p-value < 0.05) and there appears to be a weak positive association between them.*
+*1. The relationship between number of retail food store and percentage of overweight is significant (p-value < 0.05) and there appears to be a weak positive association between them.*
 
-*2.However, assumptions of linear regression should be checked before making any conclusion of this model.*
+*2. However, assumptions of linear regression should be checked before making any conclusion of this model.*
 
 <br>
 
@@ -228,6 +229,7 @@ store_market_overweight |>
 
 *The plot suggests a negative association between the overweight percentage and the number of healthy stores or farmer markets. Regions with a higher overweight percentage tend to have fewer healthy stores or farmer markets on average.*
 
+<br>
 
 ##### Model Summary
 
@@ -240,11 +242,11 @@ summary(model) |>
   knitr::kable(caption = "Association Between The Number of Healthy Stores/Farmer Markets and Overweight Percentages")
 ```
 
-*1.While the coefficient for count (-0.05) suggests a slight negative relationship between the number of healthy stores/farmer markets and overweight percentages, the relationship is weak and not statistically significant.*
+*1. While the coefficient for count (-0.05) suggests a slight negative relationship between the number of healthy stores/farmer markets and overweight percentages, the relationship is weak and not statistically significant.*
 
-*2.The large p-value (0.475) indicates that the variability in the data may overshadow the effect of healthy store availability on overweight prevalence.*
+*2. The large p-value (0.475) indicates that the variability in the data may overshadow the effect of healthy store availability on overweight prevalence.*
 
-*3.Other factors may play a more significant role in explaining the variation in overweight percentages.*
+*3. Other factors may play a more significant role in explaining the variation in overweight percentages.*
 
 <br><br>
 
@@ -256,9 +258,7 @@ summary(model) |>
 
 <br>
 
-#### Retail Food Store
-
-##### Normality
+#### Normality - Retail Food Store Model
 
 ```{r normality}
 # Extract residuals
@@ -267,16 +267,6 @@ residuals = resid(m1)
 # base R qqplot
 qqnorm(residuals, main = "QQ Plot of Residuals")
 qqline(residuals, col = "red", lwd = 2)
-
-# histogram
-# Base R histogram
-hist(residuals, 
-     main = "Histogram of Residuals", 
-     xlab = "Residuals", 
-     col = "lightblue", 
-     border = "black", 
-     breaks = 20)  # Adjust 'breaks' for bin width
-
 
 # Create a data frame for plotting
 residual_data = data.frame(residuals = residuals)
@@ -290,11 +280,13 @@ ggplot(residual_data, aes(x = residuals)) +
     y = "Frequency" ) 
 ```
 
-* Normality is not met: 
+*Normality is not met: Residuals appear not to align with the reference line and doesn't have a linear trend.*
+
+*Histogram is showing residual values clustering at the 2 ends, which also indicates a violation of normality.*
 
 <br>
 
-##### Homoscedasticity (equal variance)
+#### Homoscedasticity (equal variance) - Retail Food Store Model
 
 ```{r Homoscedasticity (equal variance)}
 # residual vs. fitted value
@@ -305,51 +297,72 @@ plot(fitted(m1), resid(m1),
      pch = 20)  # Add points
 abline(h = 0, col = "red", lwd = 2)  # Add a reference line at zero
 
-# test for homoscedasticity
-bptest(m1)
+# Perform the Breusch-Pagan test
+bp_result = bptest(m1)
+
+# Extract key components into a data frame
+bp_table = data.frame(
+  Metric = c("Breusch-Pagan Statistic", "Degrees of Freedom", "P-value"),
+  Value = c(
+    round(bp_result$statistic, 3),
+    as.character(bp_result$parameter),  # Degrees of freedom
+    signif(bp_result$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  bp_table,
+  caption = "Breusch-Pagan Test Results for Homoscedasticity",
+  col.names = c("Metric", "Value"))
 ```
 
-The test shows assumption is met since p-value < 0.05.
+*Homoscedasticity (equal variance) is met: p-value > 0.05 for the Breusch-Pagan test, which indicates we fail to reject the null hypothesis that there is not heteroscedasticity (non-equal variance).*
 
 <br>
 
-##### Linearity
+#### Linearity - Retail Food Store Model
 
 ```{r linearity, warning = FALSE}
-resettest(m1)
-# p-value > 0.05, linearity assumption is not met
+# Perform the RESET test
+reset_result = resettest(m1)
 
+# Extract key components into a data frame
+reset_table = data.frame(
+  Metric = c("RESET Statistic", "Degrees of Freedom", "P-value"),
+  Value = c(
+    round(reset_result$statistic, 3),
+    paste0(reset_result$parameter, collapse = ", "),
+    signif(reset_result$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  reset_table,
+  caption = "RESET Test Results for Linearity",
+  col.names = c("Metric", "Value"))
+
+# p-value > 0.05, linearity assumption is not met
 ```
 
-P-value > 0.05, linearity assumption is not met.
+*Linearity is not met: P-value > 0.05 for RESET test.*
 
-Since 2 of the 3 assumptions are not met, we should change our analysis type from parametric to non-parametric. We can no longer use linear regression with the datasets we have.
+<br>
 
-
-#### Healthy Food Store
-
-##### Normality
+#### Normality - Healthy Food Store Model
 
 ```{r residuals, fig.width=10, fig.height=8}
 # Extract residuals
 residuals = resid(model)
 
-# Extract fitted values
-fitted_values = fitted(model)
+# base R qqplot
+qqnorm(residuals, main = "QQ Plot of Residuals")
+qqline(residuals, col = "red", lwd = 2)
 
-# Create the residuals plot
-plot(fitted_values, residuals,
-     xlab = "Fitted Values",
-     ylab = "Residuals",
-     main = "Residuals vs. Fitted Values")
-abline(h = 0, col = "red", lty = 2)
 ```
 
-*The residual plot shows residuals scattered reasonably around the horizontal line at 0 with no obvious patterns, suggesting: The linearity assumption is likely met.*
+*The Normality assumption is likely met: the QQ plot shows residuals scattered reasonably around the reference line.*
 
 <br>
 
-##### Homoscedasticity (equal variance)
+#### Homoscedasticity (equal variance) - Healthy Food Store Model
 
 ```{r homoscedasticity (healthy food stores)}
 # residual vs. fitted value
@@ -360,37 +373,151 @@ plot(fitted(model), resid(model),
      pch = 20)  # Add points
 abline(h = 0, col = "red", lwd = 2)  # Add a reference line at zero
 
-# test for homoscedasticity
-bptest(model)
+# Perform the Breusch-Pagan test
+bp_result_1 = bptest(model)
+
+# Extract key components into a data frame
+bp_table = data.frame(
+  Metric = c("Breusch-Pagan Statistic", "Degrees of Freedom", "P-value"),
+  Value = c(
+    round(bp_result_1$statistic, 3),
+    as.character(bp_result_1$parameter),  # Degrees of freedom
+    signif(bp_result_1$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  bp_table,
+  caption = "Breusch-Pagan Test Results for Homoscedasticity",
+  col.names = c("Metric", "Value"))
 ```
 
+*Homoscedasticity (equal variance) is met: p-value > 0.05 for the Breusch-Pagan test, which indicates we fail to reject the null hypothesis that there is not heteroscedasticity (non-equal variance).*
 
 <br>
 
-##### Linearity
+#### Linearity - Healthy Food Store Model
 
 ```{r linearity (healthy food stores), warning = FALSE}
-resettest(model)
+# Perform the RESET test
+reset_result_1 = resettest(model)
+
+# Extract key components into a data frame
+reset_table = data.frame(
+  Metric = c("RESET Statistic", "Degrees of Freedom", "P-value"),
+  Value = c(
+    round(reset_result_1$statistic, 3),
+    paste0(reset_result_1$parameter, collapse = ", "),
+    signif(reset_result_1$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  reset_table,
+  caption = "RESET Test Results for Linearity",
+  col.names = c("Metric", "Value"))
+
 # p-value > 0.05, linearity assumption is not met
 ```
 
-<br>
+*Linearity is not met: P-value > 0.05 for RESET test.*
 
+<br>
 
 ### Non-parametric Test - Spearman's Rank Test
 
-*Since some of the assumptions for Pearson's correlation are not met for both models (retial food store and healthy food store vs. percentage overweight), we need to use non-parametric test, Spearman's rank test, to test for any significance in the models*
+*Since some of the assumptions for Pearson's correlation (linear regression method) are not met for both models (number of retail food store/ healthy food store vs. percentage overweight), we need to use non-parametric test, Spearman's rank test, to test for any significance in the models*
+
+<br>
 
 #### Retail Food Stores
 
-```{r Spearman Rank, warning = FALSE}
-cor.test(regression_data$store_num, regression_data$perc, method = "spearman")
-
+```{r nonlinear scatterplot m1, fig.width=10, fig.height=8}
+# scatterplot for non-linear regression
+regression_data |>
+  na.omit() |>
+  ggplot(aes(x = store_num, y = perc))  +
+  geom_point() +  
+  geom_smooth(method = "loess", se = FALSE) +  # Add a linear trend line
+  labs(
+    title = "Non-linear: Overweight Percentage vs. Number of Stores by Zip Codes",
+    x = "Number of Stores (by zip codes)",
+    y = "Overweight Percentage (%)") +
+  theme_minimal()+
+  theme(plot.title=element_text(size=14, face="bold")) +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
+
+```{r Spearman Rank, warning = FALSE}
+spearman_result = cor.test(regression_data$store_num, regression_data$perc, method = "spearman")
+
+# Extract key components
+results = data.frame(
+  Statistic = c("Spearman's rho", "P-value"),
+  Value = c(round(spearman_result$estimate, 3), signif(spearman_result$p.value, 3)))
+
+# Create a table
+knitr::kable(
+  results,
+  caption = "Spearman's Rank Correlation Test Results (Retail Food Stores)",
+  col.names = c("Metric", "Value"))
+```
+
+*Spearman's Rho: 0.1490*
+
+*This value indicates a weak positive correlation between the number of general food stores and the percentage of overweight individuals.*
+*While the relationship exists, it is not particularly strong, suggesting other factors might also influence overweight percentages.*
+
+*P-value: 0.0415*
+
+*The p-value is less than 0.05, indicating that the correlation is statistically significant.*
+*This suggests that the observed relationship is unlikely to have occurred by chance.*
+
+<br>
 
 #### Healthy Food Stores
 
-```{r Spearman healthy food stores, warning = FALSE}
-cor.test(regression_data$store_num, regression_data$perc, method = "spearman")
+```{r non linear, fig.width=10, fig.height=8}
+# Plot: Number of Healthy Stores/Farmer Markets and Overweight Percentages
+
+store_market_overweight |> 
+  na.omit() |> 
+  ggplot(aes(x = overweight_percentage, y = count)) +
+  geom_point() +
+  geom_smooth(method = loess, se = FALSE) +
+  labs(
+    title = "Non-linear Association Between The Number of Healthy Stores/Farmer Markets and Overweight Percentages",
+    x = "Overweight Percentage (%)",
+    y = "Number of Healthy Stores/Farmer Markets"
+  ) +
+  theme_minimal()+
+  theme(plot.title=element_text(size=14, face="bold")) +
+  theme(plot.title = element_text(hjust = 0.5))
+
 ```
+
+
+```{r Spearman healthy food stores, warning = FALSE}
+spearman_result_1 = cor.test(store_market_overweight$count, store_market_overweight$overweight_percentage, method = "spearman")
+
+# Extract key components
+results_1 = data.frame(
+  Statistic = c("Spearman's rho", "P-value"),
+  Value = c(round(spearman_result_1$estimate, 3), signif(spearman_result_1$p.value, 3)))
+
+# Create a table
+knitr::kable(
+  results_1,
+  caption = "Spearman's Rank Correlation Test Results (Healthy Food Stores)",
+  col.names = c("Metric", "Value"))
+```
+
+*Spearman's Rho: -0.106*
+
+*This indicates a weak negative correlation between the number of healthy food stores and the percentage of overweight individuals.*
+*While the relationship is weak, the negative value suggests that as the number of healthy food stores increases, the percentage of overweight individuals slightly decreases.*
+
+*P-value: 0.569*
+
+*The p-value is greater than 0.05, indicating that the observed correlation is not statistically significant.*
+*This means there is insufficient evidence to conclude a meaningful relationship between the number of healthy food stores and the percentage of overweight individuals.*
+

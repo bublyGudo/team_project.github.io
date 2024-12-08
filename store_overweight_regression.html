@@ -415,6 +415,7 @@ Overweight</h1>
 </div>
 
 
+<p><img src="markets.jpg" style="width: 100%;"></p>
 <pre class="r"><code># Import datasets for regression analysis
 retail_food_stores = read.csv(&quot;./data/Retail_Food_Stores_clean.csv&quot;)
 
@@ -500,7 +501,7 @@ class="section level3">
   theme(plot.title=element_text(size=22, face=&quot;bold&quot;)) +
 theme(plot.title = element_text(hjust = 0.5))</code></pre>
 <p><img src="store_overweight_regression_files/figure-html/EDA-1.png" width="960" /></p>
-<p><em>1.Brooklyn has the highest number of healthy stores and farmer
+<p><em>1. Brooklyn has the highest number of healthy stores and farmer
 markets, followed by the Bronx and Manhattan. Queens and Staten Island
 have significantly fewer healthy stores and farmer markets.</em></p>
 <p><em>2. The result is what we expected. Larger boroughs with higher
@@ -548,10 +549,10 @@ address persistently high rates in the Bronx and Staten Island.</em></p>
 <p><br></p>
 </div>
 <div
-id="linear-regression-models---retail-food-stores-and-healthy-food-stores-vs.-percentage-overweight"
+id="linear-regression-models---number-of-retail-food-stores-healthy-food-stores-vs.-percentage-overweight"
 class="section level3">
-<h3>Linear Regression Models - Retail Food Stores and Healthy Food
-Stores vs. Percentage Overweight</h3>
+<h3>Linear Regression Models - Number of Retail Food Stores/ Healthy
+Food Stores vs. Percentage Overweight</h3>
 <p><br></p>
 <div id="retail-food-stores-linear-regression-model"
 class="section level4">
@@ -618,10 +619,10 @@ Overweight Percentages</caption>
 </tr>
 </tbody>
 </table>
-<p><em>1.The relationship between number of retail food store and
+<p><em>1. The relationship between number of retail food store and
 percentage of overweight is significant (p-value &lt; 0.05) and there
 appears to be a weak positive association between them.</em></p>
-<p><em>2.However, assumptions of linear regression should be checked
+<p><em>2. However, assumptions of linear regression should be checked
 before making any conclusion of this model.</em></p>
 <p><br></p>
 </div>
@@ -649,6 +650,7 @@ store_market_overweight |&gt;
 percentage and the number of healthy stores or farmer markets. Regions
 with a higher overweight percentage tend to have fewer healthy stores or
 farmer markets on average.</em></p>
+<p><br></p>
 <div id="model-summary-1" class="section level5">
 <h5>Model Summary</h5>
 <pre class="r"><code>model = lm(overweight_percentage ~ count, data = store_market_overweight)
@@ -693,14 +695,14 @@ and Overweight Percentages</caption>
 </tr>
 </tbody>
 </table>
-<p><em>1.While the coefficient for count (-0.05) suggests a slight
+<p><em>1. While the coefficient for count (-0.05) suggests a slight
 negative relationship between the number of healthy stores/farmer
 markets and overweight percentages, the relationship is weak and not
 statistically significant.</em></p>
-<p><em>2.The large p-value (0.475) indicates that the variability in the
-data may overshadow the effect of healthy store availability on
+<p><em>2. The large p-value (0.475) indicates that the variability in
+the data may overshadow the effect of healthy store availability on
 overweight prevalence.</em></p>
-<p><em>3.Other factors may play a more significant role in explaining
+<p><em>3. Other factors may play a more significant role in explaining
 the variation in overweight percentages.</em></p>
 <p><br><br></p>
 </div>
@@ -713,10 +715,8 @@ the variation in overweight percentages.</em></p>
 <div id="assumption-check" class="section level3">
 <h3>Assumption Check</h3>
 <p><br></p>
-<div id="retail-food-store" class="section level4">
-<h4>Retail Food Store</h4>
-<div id="normality" class="section level5">
-<h5>Normality</h5>
+<div id="normality---retail-food-store-model" class="section level4">
+<h4>Normality - Retail Food Store Model</h4>
 <pre class="r"><code># Extract residuals
 residuals = resid(m1)
 
@@ -724,15 +724,6 @@ residuals = resid(m1)
 qqnorm(residuals, main = &quot;QQ Plot of Residuals&quot;)
 qqline(residuals, col = &quot;red&quot;, lwd = 2)</code></pre>
 <p><img src="store_overweight_regression_files/figure-html/normality-1.png" width="672" /></p>
-<pre class="r"><code># histogram
-# Base R histogram
-hist(residuals, 
-     main = &quot;Histogram of Residuals&quot;, 
-     xlab = &quot;Residuals&quot;, 
-     col = &quot;lightblue&quot;, 
-     border = &quot;black&quot;, 
-     breaks = 20)  # Adjust &#39;breaks&#39; for bin width</code></pre>
-<p><img src="store_overweight_regression_files/figure-html/normality-2.png" width="672" /></p>
 <pre class="r"><code># Create a data frame for plotting
 residual_data = data.frame(residuals = residuals)
 
@@ -743,14 +734,16 @@ ggplot(residual_data, aes(x = residuals)) +
     title = &quot;Histogram of Residuals&quot;,
     x = &quot;Residuals&quot;,
     y = &quot;Frequency&quot; ) </code></pre>
-<p><img src="store_overweight_regression_files/figure-html/normality-3.png" width="672" /></p>
-<ul>
-<li>Normality is not met:</li>
-</ul>
+<p><img src="store_overweight_regression_files/figure-html/normality-2.png" width="672" /></p>
+<p><em>Normality is not met: Residuals appear not to align with the
+reference line and doesn’t have a linear trend.</em></p>
+<p><em>Histogram is showing residual values clustering at the 2 ends,
+which also indicates a violation of normality.</em></p>
 <p><br></p>
 </div>
-<div id="homoscedasticity-equal-variance" class="section level5">
-<h5>Homoscedasticity (equal variance)</h5>
+<div id="homoscedasticity-equal-variance---retail-food-store-model"
+class="section level4">
+<h4>Homoscedasticity (equal variance) - Retail Food Store Model</h4>
 <pre class="r"><code># residual vs. fitted value
 plot(fitted(m1), resid(m1),
      main = &quot;Residuals vs Fitted Values&quot;,
@@ -759,55 +752,112 @@ plot(fitted(m1), resid(m1),
      pch = 20)  # Add points
 abline(h = 0, col = &quot;red&quot;, lwd = 2)  # Add a reference line at zero</code></pre>
 <p><img src="store_overweight_regression_files/figure-html/Homoscedasticity%20(equal%20variance)-1.png" width="672" /></p>
-<pre class="r"><code># test for homoscedasticity
-bptest(m1)</code></pre>
-<pre><code>## 
-##  studentized Breusch-Pagan test
-## 
-## data:  m1
-## BP = 2.7752, df = 1, p-value = 0.09573</code></pre>
-<p>The test shows assumption is met since p-value &lt; 0.05.</p>
+<pre class="r"><code># Perform the Breusch-Pagan test
+bp_result = bptest(m1)
+
+# Extract key components into a data frame
+bp_table = data.frame(
+  Metric = c(&quot;Breusch-Pagan Statistic&quot;, &quot;Degrees of Freedom&quot;, &quot;P-value&quot;),
+  Value = c(
+    round(bp_result$statistic, 3),
+    as.character(bp_result$parameter),  # Degrees of freedom
+    signif(bp_result$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  bp_table,
+  caption = &quot;Breusch-Pagan Test Results for Homoscedasticity&quot;,
+  col.names = c(&quot;Metric&quot;, &quot;Value&quot;))</code></pre>
+<table>
+<caption>Breusch-Pagan Test Results for Homoscedasticity</caption>
+<thead>
+<tr class="header">
+<th align="left">Metric</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Breusch-Pagan Statistic</td>
+<td align="left">2.775</td>
+</tr>
+<tr class="even">
+<td align="left">Degrees of Freedom</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">P-value</td>
+<td align="left">0.0957</td>
+</tr>
+</tbody>
+</table>
+<p><em>Homoscedasticity (equal variance) is met: p-value &gt; 0.05 for
+the Breusch-Pagan test, which indicates we fail to reject the null
+hypothesis that there is not heteroscedasticity (non-equal
+variance).</em></p>
 <p><br></p>
 </div>
-<div id="linearity" class="section level5">
-<h5>Linearity</h5>
-<pre class="r"><code>resettest(m1)</code></pre>
-<pre><code>## 
-##  RESET test
-## 
-## data:  m1
-## RESET = 1.3978, df1 = 2, df2 = 184, p-value = 0.2498</code></pre>
+<div id="linearity---retail-food-store-model" class="section level4">
+<h4>Linearity - Retail Food Store Model</h4>
+<pre class="r"><code># Perform the RESET test
+reset_result = resettest(m1)
+
+# Extract key components into a data frame
+reset_table = data.frame(
+  Metric = c(&quot;RESET Statistic&quot;, &quot;Degrees of Freedom&quot;, &quot;P-value&quot;),
+  Value = c(
+    round(reset_result$statistic, 3),
+    paste0(reset_result$parameter, collapse = &quot;, &quot;),
+    signif(reset_result$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  reset_table,
+  caption = &quot;RESET Test Results for Linearity&quot;,
+  col.names = c(&quot;Metric&quot;, &quot;Value&quot;))</code></pre>
+<table>
+<caption>RESET Test Results for Linearity</caption>
+<thead>
+<tr class="header">
+<th align="left">Metric</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">RESET Statistic</td>
+<td align="left">1.398</td>
+</tr>
+<tr class="even">
+<td align="left">Degrees of Freedom</td>
+<td align="left">2, 184</td>
+</tr>
+<tr class="odd">
+<td align="left">P-value</td>
+<td align="left">0.25</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code># p-value &gt; 0.05, linearity assumption is not met</code></pre>
-<p>P-value &gt; 0.05, linearity assumption is not met.</p>
-<p>Since 2 of the 3 assumptions are not met, we should change our
-analysis type from parametric to non-parametric. We can no longer use
-linear regression with the datasets we have.</p>
+<p><em>Linearity is not met: P-value &gt; 0.05 for RESET test.</em></p>
+<p><br></p>
 </div>
-</div>
-<div id="healthy-food-store" class="section level4">
-<h4>Healthy Food Store</h4>
-<div id="normality-1" class="section level5">
-<h5>Normality</h5>
+<div id="normality---healthy-food-store-model" class="section level4">
+<h4>Normality - Healthy Food Store Model</h4>
 <pre class="r"><code># Extract residuals
 residuals = resid(model)
 
-# Extract fitted values
-fitted_values = fitted(model)
-
-# Create the residuals plot
-plot(fitted_values, residuals,
-     xlab = &quot;Fitted Values&quot;,
-     ylab = &quot;Residuals&quot;,
-     main = &quot;Residuals vs. Fitted Values&quot;)
-abline(h = 0, col = &quot;red&quot;, lty = 2)</code></pre>
+# base R qqplot
+qqnorm(residuals, main = &quot;QQ Plot of Residuals&quot;)
+qqline(residuals, col = &quot;red&quot;, lwd = 2)</code></pre>
 <p><img src="store_overweight_regression_files/figure-html/residuals-1.png" width="960" /></p>
-<p><em>The residual plot shows residuals scattered reasonably around the
-horizontal line at 0 with no obvious patterns, suggesting: The linearity
-assumption is likely met.</em></p>
+<p><em>The Normality assumption is likely met: the QQ plot shows
+residuals scattered reasonably around the reference line.</em></p>
 <p><br></p>
 </div>
-<div id="homoscedasticity-equal-variance-1" class="section level5">
-<h5>Homoscedasticity (equal variance)</h5>
+<div id="homoscedasticity-equal-variance---healthy-food-store-model"
+class="section level4">
+<h4>Homoscedasticity (equal variance) - Healthy Food Store Model</h4>
 <pre class="r"><code># residual vs. fitted value
 plot(fitted(model), resid(model),
      main = &quot;Residuals vs Fitted Values&quot;,
@@ -816,61 +866,234 @@ plot(fitted(model), resid(model),
      pch = 20)  # Add points
 abline(h = 0, col = &quot;red&quot;, lwd = 2)  # Add a reference line at zero</code></pre>
 <p><img src="store_overweight_regression_files/figure-html/homoscedasticity%20(healthy%20food%20stores)-1.png" width="672" /></p>
-<pre class="r"><code># test for homoscedasticity
-bptest(model)</code></pre>
-<pre><code>## 
-##  studentized Breusch-Pagan test
-## 
-## data:  model
-## BP = 0.1862, df = 1, p-value = 0.6661</code></pre>
+<pre class="r"><code># Perform the Breusch-Pagan test
+bp_result_1 = bptest(model)
+
+# Extract key components into a data frame
+bp_table = data.frame(
+  Metric = c(&quot;Breusch-Pagan Statistic&quot;, &quot;Degrees of Freedom&quot;, &quot;P-value&quot;),
+  Value = c(
+    round(bp_result_1$statistic, 3),
+    as.character(bp_result_1$parameter),  # Degrees of freedom
+    signif(bp_result_1$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  bp_table,
+  caption = &quot;Breusch-Pagan Test Results for Homoscedasticity&quot;,
+  col.names = c(&quot;Metric&quot;, &quot;Value&quot;))</code></pre>
+<table>
+<caption>Breusch-Pagan Test Results for Homoscedasticity</caption>
+<thead>
+<tr class="header">
+<th align="left">Metric</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Breusch-Pagan Statistic</td>
+<td align="left">0.186</td>
+</tr>
+<tr class="even">
+<td align="left">Degrees of Freedom</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">P-value</td>
+<td align="left">0.666</td>
+</tr>
+</tbody>
+</table>
+<p><em>Homoscedasticity (equal variance) is met: p-value &gt; 0.05 for
+the Breusch-Pagan test, which indicates we fail to reject the null
+hypothesis that there is not heteroscedasticity (non-equal
+variance).</em></p>
 <p><br></p>
 </div>
-<div id="linearity-1" class="section level5">
-<h5>Linearity</h5>
-<pre class="r"><code>resettest(model)</code></pre>
-<pre><code>## 
-##  RESET test
-## 
-## data:  model
-## RESET = 0.083149, df1 = 2, df2 = 27, p-value = 0.9204</code></pre>
+<div id="linearity---healthy-food-store-model" class="section level4">
+<h4>Linearity - Healthy Food Store Model</h4>
+<pre class="r"><code># Perform the RESET test
+reset_result_1 = resettest(model)
+
+# Extract key components into a data frame
+reset_table = data.frame(
+  Metric = c(&quot;RESET Statistic&quot;, &quot;Degrees of Freedom&quot;, &quot;P-value&quot;),
+  Value = c(
+    round(reset_result_1$statistic, 3),
+    paste0(reset_result_1$parameter, collapse = &quot;, &quot;),
+    signif(reset_result_1$p.value, 3)))
+
+# Create a table using knitr::kable
+knitr::kable(
+  reset_table,
+  caption = &quot;RESET Test Results for Linearity&quot;,
+  col.names = c(&quot;Metric&quot;, &quot;Value&quot;))</code></pre>
+<table>
+<caption>RESET Test Results for Linearity</caption>
+<thead>
+<tr class="header">
+<th align="left">Metric</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">RESET Statistic</td>
+<td align="left">0.083</td>
+</tr>
+<tr class="even">
+<td align="left">Degrees of Freedom</td>
+<td align="left">2, 27</td>
+</tr>
+<tr class="odd">
+<td align="left">P-value</td>
+<td align="left">0.92</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code># p-value &gt; 0.05, linearity assumption is not met</code></pre>
+<p><em>Linearity is not met: P-value &gt; 0.05 for RESET test.</em></p>
 <p><br></p>
-</div>
 </div>
 </div>
 <div id="non-parametric-test---spearmans-rank-test"
 class="section level3">
 <h3>Non-parametric Test - Spearman’s Rank Test</h3>
-<p><em>Since some of the assumptions for Pearson’s correlation are not
-met for both models (retial food store and healthy food store
-vs. percentage overweight), we need to use non-parametric test,
-Spearman’s rank test, to test for any significance in the
-models</em></p>
+<p><em>Since some of the assumptions for Pearson’s correlation (linear
+regression method) are not met for both models (number of retail food
+store/ healthy food store vs. percentage overweight), we need to use
+non-parametric test, Spearman’s rank test, to test for any significance
+in the models</em></p>
+<p><br></p>
 <div id="retail-food-stores" class="section level4">
 <h4>Retail Food Stores</h4>
-<pre class="r"><code>cor.test(regression_data$store_num, regression_data$perc, method = &quot;spearman&quot;)</code></pre>
-<pre><code>## 
-##  Spearman&#39;s rank correlation rho
-## 
-## data:  regression_data$store_num and regression_data$perc
-## S = 942586, p-value = 0.04149
-## alternative hypothesis: true rho is not equal to 0
-## sample estimates:
-##       rho 
-## 0.1488406</code></pre>
+<pre class="r"><code># scatterplot for non-linear regression
+regression_data |&gt;
+  na.omit() |&gt;
+  ggplot(aes(x = store_num, y = perc))  +
+  geom_point() +  
+  geom_smooth(method = &quot;loess&quot;, se = FALSE) +  # Add a linear trend line
+  labs(
+    title = &quot;Non-linear: Overweight Percentage vs. Number of Stores by Zip Codes&quot;,
+    x = &quot;Number of Stores (by zip codes)&quot;,
+    y = &quot;Overweight Percentage (%)&quot;) +
+  theme_minimal()+
+  theme(plot.title=element_text(size=14, face=&quot;bold&quot;)) +
+  theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/nonlinear%20scatterplot%20m1-1.png" width="960" /></p>
+<pre class="r"><code>spearman_result = cor.test(regression_data$store_num, regression_data$perc, method = &quot;spearman&quot;)
+
+# Extract key components
+results = data.frame(
+  Statistic = c(&quot;Spearman&#39;s rho&quot;, &quot;P-value&quot;),
+  Value = c(round(spearman_result$estimate, 3), signif(spearman_result$p.value, 3)))
+
+# Create a table
+knitr::kable(
+  results,
+  caption = &quot;Spearman&#39;s Rank Correlation Test Results (Retail Food Stores)&quot;,
+  col.names = c(&quot;Metric&quot;, &quot;Value&quot;))</code></pre>
+<table>
+<caption>Spearman’s Rank Correlation Test Results (Retail Food
+Stores)</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Metric</th>
+<th align="right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rho</td>
+<td align="left">Spearman’s rho</td>
+<td align="right">0.1490</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">P-value</td>
+<td align="right">0.0415</td>
+</tr>
+</tbody>
+</table>
+<p><em>Spearman’s Rho: 0.1490</em></p>
+<p><em>This value indicates a weak positive correlation between the
+number of general food stores and the percentage of overweight
+individuals.</em> <em>While the relationship exists, it is not
+particularly strong, suggesting other factors might also influence
+overweight percentages.</em></p>
+<p><em>P-value: 0.0415</em></p>
+<p><em>The p-value is less than 0.05, indicating that the correlation is
+statistically significant.</em> <em>This suggests that the observed
+relationship is unlikely to have occurred by chance.</em></p>
+<p><br></p>
 </div>
 <div id="healthy-food-stores" class="section level4">
 <h4>Healthy Food Stores</h4>
-<pre class="r"><code>cor.test(regression_data$store_num, regression_data$perc, method = &quot;spearman&quot;)</code></pre>
-<pre><code>## 
-##  Spearman&#39;s rank correlation rho
-## 
-## data:  regression_data$store_num and regression_data$perc
-## S = 942586, p-value = 0.04149
-## alternative hypothesis: true rho is not equal to 0
-## sample estimates:
-##       rho 
-## 0.1488406</code></pre>
+<pre class="r"><code># Plot: Number of Healthy Stores/Farmer Markets and Overweight Percentages
+
+store_market_overweight |&gt; 
+  na.omit() |&gt; 
+  ggplot(aes(x = overweight_percentage, y = count)) +
+  geom_point() +
+  geom_smooth(method = loess, se = FALSE) +
+  labs(
+    title = &quot;Non-linear Association Between The Number of Healthy Stores/Farmer Markets and Overweight Percentages&quot;,
+    x = &quot;Overweight Percentage (%)&quot;,
+    y = &quot;Number of Healthy Stores/Farmer Markets&quot;
+  ) +
+  theme_minimal()+
+  theme(plot.title=element_text(size=14, face=&quot;bold&quot;)) +
+  theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/non%20linear-1.png" width="960" /></p>
+<pre class="r"><code>spearman_result_1 = cor.test(store_market_overweight$count, store_market_overweight$overweight_percentage, method = &quot;spearman&quot;)
+
+# Extract key components
+results_1 = data.frame(
+  Statistic = c(&quot;Spearman&#39;s rho&quot;, &quot;P-value&quot;),
+  Value = c(round(spearman_result_1$estimate, 3), signif(spearman_result_1$p.value, 3)))
+
+# Create a table
+knitr::kable(
+  results_1,
+  caption = &quot;Spearman&#39;s Rank Correlation Test Results (Healthy Food Stores)&quot;,
+  col.names = c(&quot;Metric&quot;, &quot;Value&quot;))</code></pre>
+<table>
+<caption>Spearman’s Rank Correlation Test Results (Healthy Food
+Stores)</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Metric</th>
+<th align="right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rho</td>
+<td align="left">Spearman’s rho</td>
+<td align="right">-0.106</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">P-value</td>
+<td align="right">0.569</td>
+</tr>
+</tbody>
+</table>
+<p><em>Spearman’s Rho: -0.106</em></p>
+<p><em>This indicates a weak negative correlation between the number of
+healthy food stores and the percentage of overweight individuals.</em>
+<em>While the relationship is weak, the negative value suggests that as
+the number of healthy food stores increases, the percentage of
+overweight individuals slightly decreases.</em></p>
+<p><em>P-value: 0.569</em></p>
+<p><em>The p-value is greater than 0.05, indicating that the observed
+correlation is not statistically significant.</em> <em>This means there
+is insufficient evidence to conclude a meaningful relationship between
+the number of healthy food stores and the percentage of overweight
+individuals.</em></p>
 </div>
 </div>
 </div>
