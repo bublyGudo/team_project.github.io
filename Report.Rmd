@@ -183,7 +183,7 @@ We hope that our project can serve as a foundation for future work to understand
 
 <br><br>
 
-## References
+## Reference
 
 1. [USDA: Food Insecurity, Chronic Disease, and Health Among Working-Age Adults](https://www.ers.usda.gov/webdocs/publications/84467/err-235.pdf) 
 
