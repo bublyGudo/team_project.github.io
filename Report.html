@@ -539,15 +539,53 @@ income.</p>
 <div id="plots" class="section level3">
 <h3>Plots</h3>
 <div id="walking-distance" class="section level4">
-<h4>Walking Distance</h4>
+<h4><a
+href="https://bublygudo.github.io/team_project.github.io/walkability_summary.html">Walking
+Distance</a></h4>
 <ol style="list-style-type: decimal">
-<li><p>Scatterplot - Walking Distance Per Zip Code By Borough</p></li>
-<li><p>Boxplot - Average Walking Distances in Zip Codes by
-Borough</p></li>
-<li><p>Bar Graph - Average Walking Time in Zip Code in Borough</p></li>
-<li><p>Bar Graph - Average Walking Time in Zip Code in Borough for
-Retail Food Stores and Healthy Food Stores</p></li>
+<li>Scatterplot - Walking Distance Per Zip Code By Borough</li>
 </ol>
+<p>The dataset for all food stores was combined with the longitudes and
+latitudes from the subway stations dataset, and we manually entered the
+zip codes for each store. This was saved in a dataframe called
+store_zip. The walking distances between the subway stations and food
+stores were determined using distHaversine(), a function in the
+geosphere package that uses longitude and latitude to calculate the
+distance between specified points. We calculated the average distance
+from subway to stores per zip code, and used ggplotly to create the
+scatterplot. This plot was faceted by borough to show if average
+distance to subway per zip code differed between boroughs.</p>
+<p><br></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Boxplot - Average Walking Distances in Zip Codes by Borough</li>
+</ol>
+<p>This box plot was created to further visualize the differences in
+distribution by borough for the average distance from stores to subway
+by zipcode. We used data from store_zip and created a box plot using
+plotly. This box plot helped us identify outliers and see how the
+walking distances varied within each borough.</p>
+<p><br></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Bar Graph - Average Walking Time in Zip Code in Borough</li>
+</ol>
+<p>This plot was created to provide a more tangible visual to our site
+visitors on the amount of time it takes to travel from subway stations
+to food stores in each borough. We found that it takes a person, on
+average, 1.4 seconds to walk a meter, and we used this to calculate a
+“time” variable for the number of minutes it would take an average
+person to walk from subway stations to food stores. We used plotly to
+create a bar graph with the average walking time for each borough, and
+compare these results.</p>
+<p><br></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Bar Graph - Average Walking Time in Zip Code in Borough for Retail
+Food Stores and Healthy Food Stores</li>
+</ol>
+<p>This plot was created to expand upon our previous plot to determine
+if there were differences in average walking time per borough between
+regular “retail” food stores and healthy food stores. We used our
+store_zip data frame with the calculated time variable and created a bar
+graph in ggplotly that faceted the results by borough.</p>
 <p><br></p>
 </div>
 <div id="store-density" class="section level4">
@@ -629,15 +667,13 @@ trends.</p></li>
 dataset, assumption checks were carried out:</p></li>
 </ol>
 <ol style="list-style-type: lower-alpha">
-<li>Normality: Residuals were evaluated using QQ plots. Deviations from
-normality were noted.</li>
-</ol>
-<p>b.Homoscedasticity: Residuals vs. fitted values plot and the
+<li><p>Normality: Residuals were evaluated using QQ plots. Deviations
+from normality were noted.</p></li>
+<li><p>Homoscedasticity: Residuals vs. fitted values plot and the
 Breusch-Pagan test were used to check for equal variance of
-residuals.</p>
-<ol start="3" style="list-style-type: lower-alpha">
-<li>Linearity: The RESET test were used to verify the linearity
-assumption.</li>
+residuals.</p></li>
+<li><p>Linearity: The RESET test were used to verify the linearity
+assumption.</p></li>
 </ol>
 <p><br><br></p>
 </div>
