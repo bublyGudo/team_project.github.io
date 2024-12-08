@@ -24,7 +24,7 @@ navbar:
     - text: "Data Sources"
       menu:
       - text: "Data Sources"
-        href: Data_Source.html
+        href: Data-Source.html
       - text: "Data Cleaning"
         href: data_cleaning.html
     - text: "Project Report"
