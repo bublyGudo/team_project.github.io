@@ -43,21 +43,23 @@ We began by brainstorming some initial questions to guide data cleaning and merg
     c. How concentrated are they in each neighborhood?
     
 
-2. How does the food quality compare for each store in each neighborhood? 
+2. How does the quality of food vary across stores in different neighborhoods?  
 
-3. How about the standard grocery price (such as buying bread, milk, eggs etc.) 
+3. How do standard grocery prices (e.g., bread, milk, eggs) differ between neighborhoods?  
 
-4. How does the density of healthy food stores compare to the overweight and diabetes rate in each  borough？ 
+4. How does the density of healthy food stores compare to the overweight and diabetes rate in each borough？ 
 
 <br>
 
-Due to the limitations and the need for coherence with the general research question, we modified our questions to be:
+Due to the limitations of our datasets and the need for coherence with the general research question, we modified our questions to be:
 
-1. What is the association between density (number of stores) of general food stores /pantries and household income in the year 2020?
+1. What is the association between density (number of stores) of general food stores/healthy food stores and median household income in NYC?
 
-2. Is increased density (nunmber of stores) of healthy stores associated with lower rates of overweight by borough? 
+2. Is the density (number of stores) of general retail food stores/ healthy stores associated with the percentage of overweight individuals by borough? 
+
 3. What is the walking distance from the subway to the groceries?
 
+4. What was the impact of the pandemic on food store density in NYC?
 
 <br><br>
 
@@ -95,36 +97,38 @@ Map of number of healthy food stores by zip code in the four main boroughs of NY
 
 #### [Walking Distance](https://bublygudo.github.io/team_project.github.io/walkability_summary.html)
 
-1. Scatterplot - Walking Distance Per Zip Code By Borough
+##### Scatterplot - Walking Distance Per Zip Code By Borough
 
 The dataset for all food stores was combined with the longitudes and latitudes from the subway stations dataset, and we manually entered the zip codes for each store. This was saved in a dataframe called store_zip. The walking distances between the subway stations and food stores were determined using distHaversine(), a function in the geosphere package that uses longitude and latitude to calculate the distance between specified points. We calculated the average distance from subway to stores per zip code, and used ggplotly to create the scatterplot. This plot was faceted by borough to show if average distance to subway per zip code differed between boroughs.
 
 <br>
 
-2. Boxplot - Average Walking Distances in Zip Codes by Borough
+##### Boxplot - Average Walking Distances in Zip Codes by Borough
 
-This box plot was created to further visualize the differences in distribution by borough for the average distance from stores to subway by zipcode. We used data from store_zip and created a box plot using plotly. This box plot helped us identify outliers and see how the walking distances varied within each borough. 
-
-<br>
-
-3. Bar Graph - Average Walking Time in Zip Code in Borough
-
-This plot was created to provide a more tangible visual to our site visitors on the amount of time it takes to travel from subway stations to food stores in each borough. We found that it takes a person, on average, 1.4 seconds to walk a meter, and we used this to calculate a “time” variable for the number of minutes it would take an average person to walk from subway stations to food stores. We used plotly to create a bar graph with the average walking time for each borough, and compare these results. 
+  This box plot was created to further visualize the differences in distribution by borough for the average distance from stores to subway by zipcode. We used data from store_zip and created a box plot using plotly. This box plot helped us identify outliers and see how the walking distances varied within each borough. 
 
 <br>
 
-4. Bar Graph - Average Walking Time in Zip Code in Borough for Retail Food Stores and Healthy Food Stores
+##### Bar Graph - Average Walking Time in Zip Code in Borough
 
-This plot was created to expand upon our previous plot to determine if there were differences in average walking time per borough between regular “retail” food stores and healthy food stores. We used our store_zip data frame with the calculated time variable and created a bar graph in ggplotly that faceted the results by borough.  
+  This bar graph was created to provide a more tangible visual to our site visitors on the amount of time it takes to travel from subway stations to food stores in each borough. We found that it takes a person, on average, 1.4 seconds to walk a meter, and we used this to calculate a “time” variable for the number of minutes it would take an average person to walk from subway stations to food stores. We used plotly to create a bar graph with the average walking time for each borough, and compare these results. 
+
+<br>
+
+##### Bar Graph - Average Walking Time in Zip Code in Borough for Retail Food Stores and Healthy Food Stores
+
+  This bar graph was created to expand upon our previous plot to determine if there were differences in average walking time per borough between regular “retail” food stores and healthy food stores. We used our store_zip data frame with the calculated time variable and created a bar graph in ggplotly that faceted the results by borough.  
 
 <br>
 
 
 #### Store Density
 
+<br>
+
 <img src="store_overweight_regression_files/figure-html/EDA-1.png" alt="Healthy stores and farmers' markets across NYC boroughs" style="width:60%;">
 
-1. To compare the number of healthy stores and farmer markets across NYC boroughs. A grouped bar plot was used to summarize and display the total number of food sources in each borough.
+1. This Bar graph was created to compare the number of healthy stores and farmer markets across NYC boroughs. A grouped bar plot was used to summarize and display the total number of food sources in each borough.
 
 2. Data was grouped by borough and the counts were summed using sum(count, na.rm = TRUE). X-axis: Boroughs were set as the independent variable. Y-axis: Total counts of healthy stores and farmer markets. Fill Color: Borough-specific colors were used for visual differentiation.
 
@@ -134,13 +138,17 @@ This plot was created to expand upon our previous plot to determine if there wer
 
 #### Store Density Change Due to Pandemic
 
+<br>
+
 <img src="pendemic_impact_on_stores_files/figure-html/unnamed-chunk-5-1.png" alt="store change pandemic bar" style="width:75%;">
 
-A bar plot effectively visualizes changes in healthy food store density across boroughs before and after the pandemic. This comparison highlights boroughs with significant increases or decreases in store numbers, providing an initial understanding of the pandemic’s potential impact and guiding the direction for subsequent statistical analysis, such as a t-test.
+This bar graph effectively visualizes changes in healthy food store density across boroughs before and after the pandemic. This comparison highlights boroughs with significant increases or decreases in store numbers, providing an initial understanding of the pandemic’s potential impact and guiding the direction for subsequent statistical analysis, such as a t-test.
 
 <br>
 
 #### Overweight Percentage Change
+
+<br>
 
 <img src="store_overweight_regression_files/figure-html/overweight-1.png" alt="time series overwt" style="width:75%;">
 
