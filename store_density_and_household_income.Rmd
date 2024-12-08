@@ -17,6 +17,12 @@ library(scales)
 library(mgcv)
 library(ggfortify)
 
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE, 
+  message = FALSE
+)
+
 ```
 
 We wanted to explore the influence that household income might have on the number of food stores available to individuals in NYC depending on their zip code. Here, we refer to the number of food stores as store density. We chose the year 2020 because it was the most recent year for which there was data for all the datasets we wanted to explore. 
