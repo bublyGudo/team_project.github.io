@@ -9,7 +9,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Welcome to Food Sources
+<br>
+
+### Welcome to Food Sources
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
@@ -124,16 +126,30 @@ stores_markets_retails|>
 ```
 
 
-## Project Introduction
 
-*Our team is diving into the world of Food Access and Food Justice in New York City, armed with data on healthy food stores, farmers' markets, retail shops, and food pantries. We’re on a mission to uncover how the number of these spots connects to things like housing income, how many people are struggling with being overweight, and how easy it is to walk to these places. By piecing together these clues, we’re aiming to spotlight patterns and unfair gaps in food access, all while dreaming of a city where everyone can find healthy food just around the corner.*
+<br>
 
-*On this page you can find a neat interactive map where you can spot sources of food in the NYC area!*
+### Project Introduction
 
-*We found that there are clusters of healthy food stores (e.g., farmers markets, fresh food boxes, healthy shops) in Williamsburg, Brooklyn and Morris Heights, Bronx.*
+Our team is diving into the world of Food Access and Food Justice in New York City, armed with data on healthy food stores, farmers' markets, retail shops, and food pantries. We’re on a mission to uncover how the number of these spots connects to things like housing income, how many people are struggling with being overweight, and how easy it is to walk to these places. By piecing together these clues, we’re aiming to spotlight patterns and unfair gaps in food access, all while dreaming of a city where everyone can find healthy food just around the corner.
+
+
+
+On this page you can find a neat interactive map where you can spot sources of food in the NYC area!
+
+
+
+We found that there are clusters of healthy food stores (e.g., farmers markets, fresh food boxes, healthy shops) in Williamsburg, Brooklyn and Morris Heights, Bronx.
+
+<br>
 
 *To learn more about local fresh food projects in NYC, visit the NYC [City Council website](https://council.nyc.gov/data/farm-to-city-food/) and [Shop Healthy NYC](https://www.nyc.gov/site/doh/health/neighborhood-health/shop-health.page).*
 
 <img src="income.svg" style="width:100%">
 
+<br>
+
+### Screencast
+
 <iframe width="560" height="315" src="https://www.youtube.com/embed/9fC31wUccGk?si=Z05YLueXcmMUTtKP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
