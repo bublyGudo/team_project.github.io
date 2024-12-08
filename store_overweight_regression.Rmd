@@ -392,6 +392,7 @@ summary(sp) |>
 
 
 #### Healthy Food Stores
+
 ```{r Spearman healthy food stores, warning = FALSE}
 cor.test(regression_data$store_num, regression_data$perc, method = "spearman")
 ```
