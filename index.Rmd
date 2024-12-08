@@ -149,7 +149,7 @@ We found that there are clusters of healthy food stores (e.g., farmers markets, 
 
 <br>
 
-### Screencast
+### Website Walkthrough
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/9fC31wUccGk?si=Z05YLueXcmMUTtKP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
