@@ -57,7 +57,9 @@ Due to the limitations and the need for coherence with the general research ques
 
 ## Data
 
-##### This can be directly copy and paste from data source page
+*The data cleaning process was extensive and can be found [here](link).*
+
+*The pattern we followed for all data cleaning was merging the predictor and outcome datasets (eg. Retail_Food_Store_clean.csv with Percentage Overweight by Borough.csv).*
 
 <br><br>
 
