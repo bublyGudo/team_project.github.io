@@ -13,7 +13,7 @@ navbar:
           href: store_density_and_household_income.html
         - text: "Store Density vs Overweight Percentage"
           href: store_overweight_regression.html
-        - text: "Pendemic Impact On Stores"
+        - text: "Pandemic Impact On Stores"
           href: pendemic_impact_on_stores.html
     - text: "Walkability"
       menu:
