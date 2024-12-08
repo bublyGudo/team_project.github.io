@@ -29,7 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
@@ -218,7 +222,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -228,6 +298,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -319,6 +399,14 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Your Guide to Food Shopping in NYC: Eat
@@ -328,7 +416,8 @@ Well, Live Better!</h1>
 
 
 <p><em>Zhiyu Wei (zw2975), Carolina Montes Garcia (cm3341), KK Chen
-(tc3326), Fang Wang (fw2394), Sonum Siddalingaiah (scs2267)</em></p>
+(tc3326), Fang Wang (fw2394), Sonum (Sony) Siddalingaiah
+(scs2267)</em></p>
 <p><br></p>
 <div id="motivation" class="section level2">
 <h2>Motivation</h2>
@@ -389,7 +478,7 @@ eggs etc.)</p></li>
 <li><p>How does the density of healthy food stores compare to the
 overweight and diabetes rate in each borough？</p></li>
 </ol>
-<p><br><br></p>
+<p><br></p>
 <p>Due to the limitations and the need for coherence with the general
 research question, we modified our questions to be:</p>
 <ol style="list-style-type: decimal">
@@ -406,7 +495,7 @@ groceries?</p></li>
 <div id="data" class="section level2">
 <h2>Data</h2>
 <p>The data cleaning process was extensive and can be found <a
-href="https://bublygudo.github.io/team_project.github.io/data_cleaning.htmll">here</a>.*</p>
+href="https://bublygudo.github.io/team_project.github.io/data_cleaning.html">here</a>.</p>
 <p>The pattern we followed for all data cleaning was merging the
 predictor and outcome datasets (eg. Retail_Food_Store_clean.csv with
 Percentage Overweight by Borough.csv).</p>
@@ -418,7 +507,9 @@ Percentage Overweight by Borough.csv).</p>
 <div id="maps" class="section level3">
 <h3>Maps</h3>
 <div id="landing-page" class="section level4">
-<h4>Landing Page</h4>
+<h4><a
+href="https://bublygudo.github.io/team_project.github.io/index.html">Landing
+Page</a></h4>
 <ol style="list-style-type: decimal">
 <li><p>Interactive map on landing page is to provide an intuitive visual
 representation of the geographic distribution of healthy stores, retail
@@ -461,6 +552,7 @@ Retail Food Stores and Healthy Food Stores</p></li>
 </div>
 <div id="store-density" class="section level4">
 <h4>Store Density</h4>
+<p><img src="store_overweight_regression_files/figure-html/EDA-1.png" alt="Healthy stores and farmers' markets across NYC boroughs" style="width:60%;"></p>
 <ol style="list-style-type: decimal">
 <li><p>To compare the number of healthy stores and farmer markets across
 NYC boroughs. A grouped bar plot was used to summarize and display the
@@ -477,8 +569,20 @@ emphasizing disparities in resource distribution.</p></li>
 </ol>
 <p><br></p>
 </div>
-<div id="overweight-percentage" class="section level4">
-<h4>Overweight Percentage</h4>
+<div id="store-density-change-due-to-pandemic" class="section level4">
+<h4>Store Density Change Due to Pandemic</h4>
+<p><img src="pendemic_impact_on_stores_files/figure-html/unnamed-chunk-5-1.png" alt="store change pandemic bar" style="width:75%;"></p>
+<p>A bar plot effectively visualizes changes in healthy food store
+density across boroughs before and after the pandemic. This comparison
+highlights boroughs with significant increases or decreases in store
+numbers, providing an initial understanding of the pandemic’s potential
+impact and guiding the direction for subsequent statistical analysis,
+such as a t-test.</p>
+<p><br></p>
+</div>
+<div id="overweight-percentage-change" class="section level4">
+<h4>Overweight Percentage Change</h4>
+<p><img src="store_overweight_regression_files/figure-html/overweight-1.png" alt="time series overwt" style="width:75%;"></p>
 <ol style="list-style-type: decimal">
 <li><p>A scatter plot with loess smoothing lines for each borough was
 used to display trends. Excluded data for 2023 (filter(year != 2023))
@@ -503,6 +607,17 @@ class="section level4">
 <h4>Linear Regression: Number of retail food store/ healthy food stores
 vs. percentage overweight by boroughs and Household Income vs. store
 Density of Healthy Food Stores/ Retail Food Stores</h4>
+<p><br></p>
+<div style="display: flex; justify-content: space-around;">
+<p><img src="store_overweight_regression_files/figure-html/scatterplot%20m1-1.png" alt="linear general vs overwt" style="width:49%;">
+<img src="store_overweight_regression_files/figure-html/linear-1.png" alt="linear healthy stores vs overwt" style="width:49%;"></p>
+</div>
+<p><br></p>
+<div style="display: flex; justify-content: space-around;">
+<p><img src="store_density_and_household_income_files/figure-html/unnamed-chunk-2-1.png" alt="linear income vs general store" style="width:49%;">
+<img src="store_density_and_household_income_files/figure-html/unnamed-chunk-14-1.png" alt="linear income stores vs healthy stores" style="width:49%;"></p>
+</div>
+<p><br></p>
 <ol style="list-style-type: decimal">
 <li><p>linear regression was performed to model the relationship between
 the specific variables of the models we used. The regression results
@@ -530,6 +645,34 @@ assumption.</li>
 </div>
 <div id="additional-data-analysis" class="section level2">
 <h2>Additional Data Analysis</h2>
+<p><em>Given that not all assumptions of linear regression were
+satisfied, a Spearman’s rank correlation test was conducted as a
+non-parametric alternative. This test does not require the assumptions
+of normality and linearity and is appropriate for data that may have
+monotonic but non-linear relationships.</em></p>
+<p><br></p>
+<div
+id="spearmans-rank-test-household-income-vs.-store-density-of-healthy-food-stores-retail-food-stores-and-household-income-vs.-store-density-of-healthy-food-stores-retail-food-stores"
+class="section level3">
+<h3>Spearman’s Rank Test: Household Income vs. store Density of Healthy
+Food Stores/ Retail Food Stores and Household Income vs. store Density
+of Healthy Food Stores/ Retail Food Stores</h3>
+<p><br></p>
+<div style="display: flex; justify-content: space-around;">
+<p><img src="store_overweight_regression_files/figure-html/nonlinear%20scatterplot%20m1-1.png" alt="non linear general vs overwt" style="width:49%;">
+<img src="store_overweight_regression_files/figure-html/Non%20linear-1.png" alt="non linear healthy stores vs overwt" style="width:49%;"></p>
+</div>
+<p><br></p>
+<div style="display: flex; justify-content: space-around;">
+<p><img src="store_density_and_household_income_files/figure-html/unnamed-chunk-4-1.png" alt="linear income vs general store" style="width:49%;">
+<img src="store_density_and_household_income_files/figure-html/unnamed-chunk-25-1.png" alt="linear income stores vs healthy stores" style="width:49%;"></p>
+</div>
+<p><br></p>
+<p>Non-linear regression plots were generated to visualize the trends
+suggested by the data points, providing a clearer depiction of the
+relationships and improving the interpretation of the tested models.</p>
+<p><br></p>
+</div>
 <div id="t-test-pandemic-impact-on-grocery-store-density-by-borough"
 class="section level3">
 <h3>T-test: Pandemic Impact on Grocery Store Density by Borough</h3>
@@ -537,25 +680,6 @@ class="section level3">
 t-test was conducted to compare the number of stores before and after
 the pandemic, determining whether the observed changes were
 statistically significant.</p>
-<p><br></p>
-</div>
-<div
-id="spearmans-rank-test-household-income-vs.-store-density-of-healthy-food-stores-retail-food-stores"
-class="section level3">
-<h3>Spearman’s Rank Test: Household Income vs. store Density of Healthy
-Food Stores/ Retail Food Stores</h3>
-<p>Given that not all assumptions of linear regression were satisfied, a
-Spearman’s rank correlation test was conducted as a non-parametric
-alternative. This test does not require the assumptions of normality and
-linearity and is appropriate for data that may have monotonic but
-non-linear relationships.</p>
-<p><br></p>
-</div>
-<div
-id="spearmans-rank-test-household-income-vs.-store-density-of-healthy-food-stores-retail-food-stores-1"
-class="section level3">
-<h3>Spearman’s Rank Test: Household Income vs. store Density of Healthy
-Food Stores/ Retail Food Stores</h3>
 <p><br><br></p>
 </div>
 </div>
@@ -664,6 +788,8 @@ Adults</a></li>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -695,7 +821,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

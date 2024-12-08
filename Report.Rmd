@@ -1,12 +1,18 @@
 ---
 title: "Your Guide to Food Shopping in NYC: Eat Well, Live Better!"
+output: 
+  html_document:
+    toc: true 
+    toc_float: true    
+    number_sections: false
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 ```
 
-*Zhiyu Wei (zw2975), Carolina Montes Garcia (cm3341), KK Chen (tc3326), Fang Wang (fw2394), Sonum Siddalingaiah (scs2267)*
+*Zhiyu Wei (zw2975), Carolina Montes Garcia (cm3341), KK Chen (tc3326), Fang Wang (fw2394), Sonum (Sony) Siddalingaiah (scs2267)*
 
 <br>
 
@@ -43,7 +49,7 @@ We began by brainstorming some initial questions to guide data cleaning and merg
 
 4. How does the density of healthy food stores compare to the overweight and diabetes rate in each  borough？ 
 
-<br><br>
+<br>
 
 Due to the limitations and the need for coherence with the general research question, we modified our questions to be:
 
@@ -57,7 +63,7 @@ Due to the limitations and the need for coherence with the general research ques
 
 ## Data
 
-The data cleaning process was extensive and can be found [here](https://bublygudo.github.io/team_project.github.io/data_cleaning.htmll).*
+The data cleaning process was extensive and can be found [here](https://bublygudo.github.io/team_project.github.io/data_cleaning.html).
 
 The pattern we followed for all data cleaning was merging the predictor and outcome datasets (eg. Retail_Food_Store_clean.csv with Percentage Overweight by Borough.csv).
 
@@ -69,7 +75,7 @@ The pattern we followed for all data cleaning was merging the predictor and outc
 
 ### Maps 
 
-#### Landing Page
+#### [Landing Page](https://bublygudo.github.io/team_project.github.io/index.html)
 
 1. Interactive map on landing page is to provide an intuitive visual representation of the geographic distribution of healthy stores, retail stores, and farmer markets across NYC. The interactive map was created using the leaflet package.
 
@@ -85,7 +91,7 @@ Map of number of healthy food stores by zip code in the four main boroughs of NY
 
 <br>
 
-### Plots 
+### Plots
 
 #### Walking Distance
 
@@ -99,7 +105,10 @@ Map of number of healthy food stores by zip code in the four main boroughs of NY
 
 <br>
 
+
 #### Store Density
+
+<img src="store_overweight_regression_files/figure-html/EDA-1.png" alt="Healthy stores and farmers' markets across NYC boroughs" style="width:60%;">
 
 1. To compare the number of healthy stores and farmer markets across NYC boroughs. A grouped bar plot was used to summarize and display the total number of food sources in each borough.
 
@@ -109,7 +118,17 @@ Map of number of healthy food stores by zip code in the four main boroughs of NY
 
 <br>
 
-#### Overweight Percentage
+#### Store Density Change Due to Pandemic
+
+<img src="pendemic_impact_on_stores_files/figure-html/unnamed-chunk-5-1.png" alt="store change pandemic bar" style="width:75%;">
+
+A bar plot effectively visualizes changes in healthy food store density across boroughs before and after the pandemic. This comparison highlights boroughs with significant increases or decreases in store numbers, providing an initial understanding of the pandemic’s potential impact and guiding the direction for subsequent statistical analysis, such as a t-test.
+
+<br>
+
+#### Overweight Percentage Change
+
+<img src="store_overweight_regression_files/figure-html/overweight-1.png" alt="time series overwt" style="width:75%;">
 
 1. A scatter plot with loess smoothing lines for each borough was used to display trends. Excluded data for 2023 (filter(year != 2023)) due to incomplete or anomalous data for this year. X-axis: Treated year as a continuous variable (as.numeric(year)) to show trends over time. Displayed all years explicitly using scale_x_continuous() with unique labels for readability. Y-axis: Represented overweight_percentage as the dependent variable. Points and Smoothing Lines: Points: Represent individual borough-year overweight percentages. Smoothing Lines: Added loess (local regression) smoothing to highlight trends for each borough without assuming linearity. Each borough was given a distinct color for differentiation in the visualization.
 
@@ -118,6 +137,22 @@ Map of number of healthy food stores by zip code in the four main boroughs of NY
 <br>
 
 #### Linear Regression: Number of retail food store/ healthy food stores vs. percentage overweight by boroughs and Household Income vs. store Density of Healthy Food Stores/ Retail Food Stores
+
+<br>
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="store_overweight_regression_files/figure-html/scatterplot m1-1.png" alt="linear general vs overwt" style="width:49%;">
+  <img src="store_overweight_regression_files/figure-html/linear-1.png" alt="linear healthy stores vs overwt" style="width:49%;">
+</div>
+
+<br>
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="store_density_and_household_income_files/figure-html/unnamed-chunk-2-1.png" alt="linear income vs general store" style="width:49%;">
+  <img src="store_density_and_household_income_files/figure-html/unnamed-chunk-14-1.png" alt="linear income stores vs healthy stores" style="width:49%;">
+</div>
+
+<br>
 
 1. linear regression was performed to model the relationship between the specific variables of the models we used. The regression results provided insights into the strength and direction of the relationship. Scatter plots were also created to visualize the data points and the fitted regression line, offering clear graphical representations of trends.
 
@@ -133,19 +168,37 @@ Map of number of healthy food stores by zip code in the four main boroughs of NY
 
 ## Additional Data Analysis
 
+*Given that not all assumptions of linear regression were satisfied, a Spearman’s rank correlation test was conducted as a non-parametric alternative. This test does not require the assumptions of normality and linearity and is appropriate for data that may have monotonic but non-linear relationships.*
+
+<br>
+
+### Spearman's Rank Test: Household Income vs. store Density of Healthy Food Stores/ Retail Food Stores and Household Income vs. store Density of Healthy Food Stores/ Retail Food Stores
+
+<br>
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="store_overweight_regression_files/figure-html/nonlinear scatterplot m1-1.png" alt="non linear general vs overwt" style="width:49%;">
+  <img src="store_overweight_regression_files/figure-html/Non linear-1.png" alt="non linear healthy stores vs overwt" style="width:49%;">
+</div>
+
+<br>
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="store_density_and_household_income_files/figure-html/unnamed-chunk-4-1.png" alt="linear income vs general store" style="width:49%;">
+  <img src="store_density_and_household_income_files/figure-html/unnamed-chunk-25-1.png" alt="linear income stores vs healthy stores" style="width:49%;">
+</div>
+
+<br>
+
+Non-linear regression plots were generated to visualize the trends suggested by the data points, providing a clearer depiction of the relationships and improving the interpretation of the tested models.
+
+
+<br>
+
 ### T-test: Pandemic Impact on Grocery Store Density by Borough
 
 To evaluate the impact of the pandemic on grocery store numbers, a t-test was conducted to compare the number of stores before and after the pandemic, determining whether the observed changes were statistically significant.
 
-<br>
-
-### Spearman's Rank Test: Household Income vs. store Density of Healthy Food Stores/ Retail Food Stores
-
-Given that not all assumptions of linear regression were satisfied, a Spearman’s rank correlation test was conducted as a non-parametric alternative. This test does not require the assumptions of normality and linearity and is appropriate for data that may have monotonic but non-linear relationships.
-
-<br>
-
-### Spearman's Rank Test: Household Income vs. store Density of Healthy Food Stores/ Retail Food Stores
 
 <br><br>
 
