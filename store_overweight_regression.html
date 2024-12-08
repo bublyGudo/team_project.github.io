@@ -370,7 +370,7 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="Data_Sources.html">Data Sources</a>
+      <a href="Data_Source.html">Data Sources</a>
     </li>
     <li>
       <a href="data_cleaning.html">Data Cleaning</a>
@@ -378,7 +378,7 @@ div.tocify {
   </ul>
 </li>
 <li>
-  <a href="project_report.html">Project Report</a>
+  <a href="Report.html">Project Report</a>
 </li>
 <li>
   <a href="mailto:fw2394@cumc.columbia.edu, cm3341@cumc.columbia.edu, tc3326@cumc.columbia.edu, scs2267@cumc.columbia.edu, zw2975@cumc.columbia.edu">
@@ -415,7 +415,31 @@ Overweight</h1>
 </div>
 
 
-<pre class="r"><code># load &quot;stores&quot; dataset and cleaning up:
+<pre class="r"><code># Import datasets for regression analysis
+retail_food_stores = read.csv(&quot;./data/Retail_Food_Stores_clean.csv&quot;)
+
+overwt = read.csv(&quot;./data/Overweight by boroughs.csv&quot;)
+
+# average the percentage for each borough
+overwt_mean = overwt |&gt;
+  mutate(perc_overwt = word(Percent, 1)) |&gt;
+  mutate(perc_overwt = as.numeric(perc_overwt)) |&gt;
+  group_by(Geography) |&gt;
+  summarize(perc = mean(perc_overwt, na.rm =TRUE))|&gt;
+  rename(county = Geography) 
+
+
+# group numbers of stores by counties
+num_stores = retail_food_stores |&gt;
+  group_by(borough, zip_code)|&gt;
+  count() |&gt;
+  rename (store_num = n,
+          county = borough)
+
+# join datasets
+regression_data = left_join(overwt_mean, num_stores, by=&quot;county&quot;)
+
+# load &quot;stores&quot; dataset and cleaning up:
 stores = read.csv(&quot;./data/Recognized_Shop_Healthy_Stores_20241116.csv&quot;) |&gt; 
   janitor::clean_names() |&gt; 
   mutate(borough = case_when(
@@ -433,12 +457,12 @@ farmer_market = read.csv(&quot;./data/farmers_market_data.csv&quot;) |&gt;
   select(farmers_market, borough, year) |&gt; 
   rename(healthy_store_market = farmers_market) 
 
-# bind the &quot;stores&quot; and &quot;farmer_marke&quot;:
+# bind &quot;stores&quot; and &quot;farmer_market&quot;:
 stores_farmer_market = rbind(stores, farmer_market)
 
-# load overweight data:
-overweight = read.csv(&quot;./data/Overweight by boroughs.csv&quot;) |&gt; 
-  separate (Percent, into = c(&quot;percent&quot;, &quot;low_confidence&quot;, &quot;high_confidence&quot;))|&gt; 
+# clean overweight data:
+overweight = overwt |&gt; 
+  separate (Percent, into = c(&quot;percent&quot;, &quot;low_confidence&quot;, &quot;highconfidence&quot;))|&gt; 
   mutate(percent = as.numeric(percent)) |&gt; 
   janitor::clean_names() |&gt; 
   rename (borough = geography, year = time_period, overweight_percentage = percent) |&gt; 
@@ -454,9 +478,14 @@ counts = stores_farmer_market |&gt;
 store_market_overweight = full_join (counts, overweight, by = join_by(year, borough)) |&gt; 
   mutate(year = as.factor(year))
 
+# write csv file for later use
 write.csv(store_market_overweight, &quot;./data/store_market_overweight.csv&quot;)</code></pre>
-<div id="exploratory-data-analysis" class="section level1">
-<h1>Exploratory Data Analysis</h1>
+<p><br><br></p>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory Data Analysis</h2>
+<div id="healthy-food-stores-and-farmers-markets-in-each-borough"
+class="section level3">
+<h3>Healthy Food Stores and Farmer’s Markets in Each Borough</h3>
 <pre class="r"><code># The Number of Healthy Stores/Farmer Markets in Each Borough
   store_market_overweight |&gt;
     group_by(borough) |&gt; 
@@ -481,6 +510,11 @@ establishments.</em></p>
 <p><em>3. Disparity in the availability of healthy food resources is
 evident. Policy efforts should target underserved boroughs (e.g., Staten
 Island and Queens) to improve access to healthy food options.</em></p>
+<p><br></p>
+</div>
+<div id="overweight-percentage-changes-by-year-in-each-nyc-borough"
+class="section level3">
+<h3>Overweight Percentage Changes by Year in Each NYC Borough</h3>
 <pre class="r"><code># Overweight Percentage Changes by Year in Each Borough
   store_market_overweight |&gt;
   filter(year !=2023) |&gt; 
@@ -511,14 +545,95 @@ Bronx face systemic challenges.</em></p>
 <p><em>3. Declining overweight percentages may reflect the impact of
 health initiatives. Borough-specific interventions are necessary to
 address persistently high rates in the Bronx and Staten Island.</em></p>
+<p><br></p>
 </div>
-<div id="linear-plot" class="section level1">
-<h1>Linear Plot</h1>
+<div
+id="linear-regression-models---retail-food-stores-and-healthy-food-stores-vs.-percentage-overweight"
+class="section level3">
+<h3>Linear Regression Models - Retail Food Stores and Healthy Food
+Stores vs. Percentage Overweight</h3>
+<p><br></p>
+<div id="retail-food-stores-linear-regression-model"
+class="section level4">
+<h4>Retail Food Stores (linear regression model)</h4>
+<pre class="r"><code># scatterplot for linear regression
+regression_data |&gt;
+  na.omit() |&gt;
+  ggplot(aes(x = store_num, y = perc))  +
+  geom_point() +  
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +  # Add a linear trend line
+  labs(
+    title = &quot;Overweight Percentage vs. Number of Stores by Zip Codes&quot;,
+    x = &quot;Number of Stores (by zip codes)&quot;,
+    y = &quot;Overweight Percentage (%)&quot;) +
+  theme_minimal()+
+  theme(plot.title=element_text(size=14, face=&quot;bold&quot;)) +
+  theme(plot.title = element_text(hjust = 0.5))</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/scatterplot%20m1-1.png" width="960" /></p>
+<p><em>The plot suggests a positive association between the number of
+retail food stores and overweight percentage.</em></p>
+<p><br></p>
+<div id="model-summary" class="section level5">
+<h5>Model Summary</h5>
+<pre class="r"><code># Pearson&#39;s Linear Regression
+m1 = lm(perc ~ store_num, data = regression_data)
+
+summary(m1) |&gt; 
+  broom::tidy()|&gt;
+  mutate(term = ifelse(term == &quot;store_num&quot;, &quot;Slope (Number of Retail Food Stores)&quot;, term)) |&gt; 
+  knitr::kable(caption = &quot;Association Between The Number of Retail Food Stores and Overweight Percentages&quot;)</code></pre>
+<table>
+<caption>Association Between The Number of Retail Food Stores and
+Overweight Percentages</caption>
+<colgroup>
+<col width="48%" />
+<col width="14%" />
+<col width="12%" />
+<col width="12%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">53.6472336</td>
+<td align="right">0.7534963</td>
+<td align="right">71.197737</td>
+<td align="right">0.00e+00</td>
+</tr>
+<tr class="even">
+<td align="left">Slope (Number of Retail Food Stores)</td>
+<td align="right">0.0430127</td>
+<td align="right">0.0097448</td>
+<td align="right">4.413923</td>
+<td align="right">1.72e-05</td>
+</tr>
+</tbody>
+</table>
+<p><em>1.The relationship between number of retail food store and
+percentage of overweight is significant (p-value &lt; 0.05) and there
+appears to be a weak positive association between them.</em></p>
+<p><em>2.However, assumptions of linear regression should be checked
+before making any conclusion of this model.</em></p>
+<p><br></p>
+</div>
+</div>
+<div id="healthy-food-stores-linear-regression-model"
+class="section level4">
+<h4>Healthy Food Stores (linear regression model)</h4>
 <pre class="r"><code># Plot: Number of Healthy Stores/Farmer Markets and Overweight Percentages
 
 store_market_overweight |&gt; 
   na.omit() |&gt; 
-  ggplot(aes(x = count, y = overweight_percentage)) +
+  ggplot(aes(x = overweight_percentage, y = count)) +
   geom_point() +
   geom_smooth(method = lm, se = FALSE) +
   labs(
@@ -529,22 +644,29 @@ store_market_overweight |&gt;
   theme_minimal()+
   theme(plot.title=element_text(size=14, face=&quot;bold&quot;)) +
   theme(plot.title = element_text(hjust = 0.5))</code></pre>
-<p><img src="store_overweight_regression_files/figure-html/linear-1.png" width="960" />
-<em>The plot suggests a negative association between the overweight
+<p><img src="store_overweight_regression_files/figure-html/linear-1.png" width="960" /></p>
+<p><em>The plot suggests a negative association between the overweight
 percentage and the number of healthy stores or farmer markets. Regions
 with a higher overweight percentage tend to have fewer healthy stores or
 farmer markets on average.</em></p>
-</div>
-<div id="linear-regression-model" class="section level1">
-<h1>Linear Regression Model</h1>
+<div id="model-summary-1" class="section level5">
+<h5>Model Summary</h5>
 <pre class="r"><code>model = lm(overweight_percentage ~ count, data = store_market_overweight)
 
 summary(model) |&gt; 
   broom::tidy() |&gt;
+    mutate(term = ifelse(term == &quot;count&quot;, &quot;Slope (Number of Healthy Food Stores)&quot;, term)) |&gt; 
   knitr::kable(caption = &quot;Association Between The Number of Healthy Stores/Farmer Markets and Overweight Percentages&quot;)</code></pre>
 <table>
 <caption>Association Between The Number of Healthy Stores/Farmer Markets
 and Overweight Percentages</caption>
+<colgroup>
+<col width="47%" />
+<col width="13%" />
+<col width="12%" />
+<col width="13%" />
+<col width="12%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">term</th>
@@ -563,7 +685,7 @@ and Overweight Percentages</caption>
 <td align="right">0.0000000</td>
 </tr>
 <tr class="even">
-<td align="left">count</td>
+<td align="left">Slope (Number of Healthy Food Stores)</td>
 <td align="right">-0.0499049</td>
 <td align="right">0.0690072</td>
 <td align="right">-0.7231828</td>
@@ -580,9 +702,92 @@ data may overshadow the effect of healthy store availability on
 overweight prevalence.</em></p>
 <p><em>3.Other factors may play a more significant role in explaining
 the variation in overweight percentages.</em></p>
+<p><br><br></p>
 </div>
-<div id="risidual-plot" class="section level1">
-<h1>Risidual Plot</h1>
+</div>
+</div>
+</div>
+<div id="additional-data-analysis" class="section level2">
+<h2>Additional Data Analysis</h2>
+<p><br></p>
+<div id="assumption-check" class="section level3">
+<h3>Assumption Check</h3>
+<p><br></p>
+<div id="retail-food-store" class="section level4">
+<h4>Retail Food Store</h4>
+<div id="normality" class="section level5">
+<h5>Normality</h5>
+<pre class="r"><code># Extract residuals
+residuals = resid(m1)
+
+# base R qqplot
+qqnorm(residuals, main = &quot;QQ Plot of Residuals&quot;)
+qqline(residuals, col = &quot;red&quot;, lwd = 2)</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/normality-1.png" width="672" /></p>
+<pre class="r"><code># histogram
+# Base R histogram
+hist(residuals, 
+     main = &quot;Histogram of Residuals&quot;, 
+     xlab = &quot;Residuals&quot;, 
+     col = &quot;lightblue&quot;, 
+     border = &quot;black&quot;, 
+     breaks = 20)  # Adjust &#39;breaks&#39; for bin width</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/normality-2.png" width="672" /></p>
+<pre class="r"><code># Create a data frame for plotting
+residual_data = data.frame(residuals = residuals)
+
+# Checking using histogram
+ggplot(residual_data, aes(x = residuals)) +
+  geom_histogram(binwidth = 1, fill = &quot;lightblue&quot;, color = &quot;black&quot;, alpha = 0.7) +  # Adjust binwidth as needed
+  labs(
+    title = &quot;Histogram of Residuals&quot;,
+    x = &quot;Residuals&quot;,
+    y = &quot;Frequency&quot; ) </code></pre>
+<p><img src="store_overweight_regression_files/figure-html/normality-3.png" width="672" /></p>
+<ul>
+<li>Normality is not met:</li>
+</ul>
+<p><br></p>
+</div>
+<div id="homoscedasticity-equal-variance" class="section level5">
+<h5>Homoscedasticity (equal variance)</h5>
+<pre class="r"><code># residual vs. fitted value
+plot(fitted(m1), resid(m1),
+     main = &quot;Residuals vs Fitted Values&quot;,
+     xlab = &quot;Fitted Values&quot;,
+     ylab = &quot;Residuals&quot;,
+     pch = 20)  # Add points
+abline(h = 0, col = &quot;red&quot;, lwd = 2)  # Add a reference line at zero</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/Homoscedasticity%20(equal%20variance)-1.png" width="672" /></p>
+<pre class="r"><code># test for homoscedasticity
+bptest(m1)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  m1
+## BP = 2.7752, df = 1, p-value = 0.09573</code></pre>
+<p>The test shows assumption is met since p-value &lt; 0.05.</p>
+<p><br></p>
+</div>
+<div id="linearity" class="section level5">
+<h5>Linearity</h5>
+<pre class="r"><code>resettest(m1)</code></pre>
+<pre><code>## 
+##  RESET test
+## 
+## data:  m1
+## RESET = 1.3978, df1 = 2, df2 = 184, p-value = 0.2498</code></pre>
+<pre class="r"><code># p-value &gt; 0.05, linearity assumption is not met</code></pre>
+<p>P-value &gt; 0.05, linearity assumption is not met.</p>
+<p>Since 2 of the 3 assumptions are not met, we should change our
+analysis type from parametric to non-parametric. We can no longer use
+linear regression with the datasets we have.</p>
+</div>
+</div>
+<div id="healthy-food-store" class="section level4">
+<h4>Healthy Food Store</h4>
+<div id="normality-1" class="section level5">
+<h5>Normality</h5>
 <pre class="r"><code># Extract residuals
 residuals = resid(model)
 
@@ -599,6 +804,75 @@ abline(h = 0, col = &quot;red&quot;, lty = 2)</code></pre>
 <p><em>The residual plot shows residuals scattered reasonably around the
 horizontal line at 0 with no obvious patterns, suggesting: The linearity
 assumption is likely met.</em></p>
+<p><br></p>
+</div>
+<div id="homoscedasticity-equal-variance-1" class="section level5">
+<h5>Homoscedasticity (equal variance)</h5>
+<pre class="r"><code># residual vs. fitted value
+plot(fitted(model), resid(model),
+     main = &quot;Residuals vs Fitted Values&quot;,
+     xlab = &quot;Fitted Values&quot;,
+     ylab = &quot;Residuals&quot;,
+     pch = 20)  # Add points
+abline(h = 0, col = &quot;red&quot;, lwd = 2)  # Add a reference line at zero</code></pre>
+<p><img src="store_overweight_regression_files/figure-html/homoscedasticity%20(healthy%20food%20stores)-1.png" width="672" /></p>
+<pre class="r"><code># test for homoscedasticity
+bptest(model)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  model
+## BP = 0.1862, df = 1, p-value = 0.6661</code></pre>
+<p><br></p>
+</div>
+<div id="linearity-1" class="section level5">
+<h5>Linearity</h5>
+<pre class="r"><code>resettest(model)</code></pre>
+<pre><code>## 
+##  RESET test
+## 
+## data:  model
+## RESET = 0.083149, df1 = 2, df2 = 27, p-value = 0.9204</code></pre>
+<pre class="r"><code># p-value &gt; 0.05, linearity assumption is not met</code></pre>
+<p><br></p>
+</div>
+</div>
+</div>
+<div id="non-parametric-test---spearmans-rank-test"
+class="section level3">
+<h3>Non-parametric Test - Spearman’s Rank Test</h3>
+<p><em>Since some of the assumptions for Pearson’s correlation are not
+met for both models (retial food store and healthy food store
+vs. percentage overweight), we need to use non-parametric test,
+Spearman’s rank test, to test for any significance in the
+models</em></p>
+<div id="retail-food-stores" class="section level4">
+<h4>Retail Food Stores</h4>
+<pre class="r"><code>cor.test(regression_data$store_num, regression_data$perc, method = &quot;spearman&quot;)</code></pre>
+<pre><code>## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  regression_data$store_num and regression_data$perc
+## S = 942586, p-value = 0.04149
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.1488406</code></pre>
+</div>
+<div id="healthy-food-stores" class="section level4">
+<h4>Healthy Food Stores</h4>
+<pre class="r"><code>cor.test(regression_data$store_num, regression_data$perc, method = &quot;spearman&quot;)</code></pre>
+<pre><code>## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  regression_data$store_num and regression_data$perc
+## S = 942586, p-value = 0.04149
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##       rho 
+## 0.1488406</code></pre>
+</div>
+</div>
 </div>
 
 

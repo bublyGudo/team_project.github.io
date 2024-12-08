@@ -384,10 +384,8 @@ resettest(model)
 #### Retail Food Stores
 
 ```{r Spearman Rank, warning = FALSE}
-sp = cor.test(regression_data$store_num, regression_data$perc, method = "spearman")
-summary(sp) |> 
-  broom::tidy()|>
-  knitr::kable(caption = "Association Between The Number of Retail Food Stores and Overweight Percentages")
+cor.test(regression_data$store_num, regression_data$perc, method = "spearman")
+
 ```
 
 
