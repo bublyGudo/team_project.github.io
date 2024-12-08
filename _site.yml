@@ -24,11 +24,11 @@ navbar:
     - text: "Data Sources"
       menu:
       - text: "Data Sources"
-        href: Data_Sources.html
+        href: Data_Source.html
       - text: "Data Cleaning"
         href: data_cleaning.html
     - text: "Project Report"
-      href: project_report.html
+      href: Report.html
     - icon: fa-envelope fa-lg
       href: mailto:fw2394@cumc.columbia.edu, cm3341@cumc.columbia.edu, tc3326@cumc.columbia.edu, scs2267@cumc.columbia.edu, zw2975@cumc.columbia.edu
     - icon: fa-github fa-lg
