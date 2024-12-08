@@ -2,8 +2,10 @@
 title: "Store Density and Median Household Income in 2020"
 output: 
   html_document:
+    toc: true 
+    toc_float: true    
+    number_sections: false
     code_folding: hide
-    always_allow_html: true
 ---
   
 ```{r setup, message = FALSE, error=FALSE, warning=FALSE}
@@ -31,11 +33,11 @@ We began by taking a look at the density of general food stores, meaning those t
 
 We followed this by an exploration and analysis of food stores that were characterized as selling healthy food options (e.g., fresh-locally grown produce, low-sodium canned goods, healthier snacks and deli options, etc.) 
 
-<br>
+
 
 <img src="income.jpg" style="width:100%">
 
-<br>
+
 
 ## General Food Store Access 
 
@@ -154,7 +156,6 @@ spearman_results %>%
   
 The results reveal a statistically significant moderate negative correlation between food store density and household median income (ρ = −0.5077, p < 0.001). The extremely small p-value (p = 7.409 × 10⁻¹³) confirms the robustness of this relationship, far exceeding the standard threshold for statistical significance (0.05). The Spearman rank correlation coefficient (ρ = −0.5077) indicates that ZIP codes with higher food store density are associated with lower household median incomes.
 
-<br>  
   
 ## Access to Healthy Food Stores
   
@@ -243,7 +244,7 @@ write.csv(healthy_stores_hh_data, "healthy_stores_hh_data.csv", row.names = FALS
 
 ```
 
-### Interactive Map: Visualizing Food Store Clusters
+#### Interactive Map: Visualizing Food Store Clusters
 
 Let's begin by create median income brackets for choropleth visualization.
 
@@ -338,7 +339,7 @@ leaflet(data = filtered_map_data) %>%
 We can see clustering of points in Harlem, Brooklyn, and the Bronx.
 
 
-### Exploratory Analysis
+#### Exploratory Analysis
 
 Summarize number of stores by unique zip code and borough combination. 
 ```{r}
@@ -505,7 +506,7 @@ We can see here that in the Brooklyn zip code 11206, there are 45 healthy food s
 The disproportionately high number of healthy food stores in Williamsburg (11206) and Morris Heights (10453) may be influenced by several factors. These neighborhoods could be beneficiaries of targeted public health initiatives or grants aimed at improving food access, such as farmers' markets or NYC-specific programs. Gentrification in Williamsburg has likely shifted demographics, attracting wealthier residents who demand more health-conscious options, while community advocacy efforts in both areas may have supported the establishment of healthy food markets and urban agriculture projects. 
 
 
-### Additional Analysis
+#### Additional Analysis
 
 Given the assumptions violations for linear regression, we decided to instead utilize a Spearman Ranked correlation to capture the non-linear relationship between number of stores and median household income. 
 
