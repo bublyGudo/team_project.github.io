@@ -34,7 +34,7 @@ We followed this by an exploration and analysis of food stores that were charact
 <img src="markets.jpg" style="width:100%">
 
 
-## General Food Store Access
+## General Food Store Access 
 
 
 ### Load the corresponding datasets for household income in 2020 and retail food stores that we will use to represent general food store access in NYC. 
@@ -152,24 +152,15 @@ To first visualize our data, we will create a scatterplot with a linear regressi
   
   
 #### Data import and cleaning
+Import cleaned datasets. Merged healthy stores dataset with zip codes and household income data for 2020. I removed any observations from "Staten Island" as they are few. Additionally, I suspect that the number of stores within a zip code may not be indicative of access to healthy food stores, since a main mode of transportation in State Island is by car. Our analyses about NYC are based on an assumption that most people are accessing their healthy foods via some form of public transportation. 
 
-Load shapefiles for NY zip codes to use later on.
 ```{r}
 ny_zipcodes = st_read("./data/NY_zip.shp")
-```
 
-Load dataset with latitude and longitude. Filter for year 2020. Notice that there are a few missing latitudes and longitudes. I will find a way to generate these since our dataset is already small '254'.
-
-```{r}
 healthy_stores_2020 = 
   read.csv("./data/stores_farmer_market.csv",  
   na = c("NA", "."))%>%
   filter(year == "2020")
-```
-
-Filter out observations with missing long and lat. Use `tinygeocoder` to fill in missing longitudes and latitudes.
-
-```{r}
 
 missing_long_lat = healthy_stores_2020 %>%
   filter(is.na(longitude) | is.na(latitude))
@@ -188,34 +179,14 @@ filled_data = missing_long_lat %>%
     longitude = longitude...9
   )
 
-```
-
-Merge back into the original dataset.  
-```{r}
 healthy_stores_2020 = healthy_stores_2020 %>%
   rows_update(filled_data, by = "address")
 
-```
-
-Now we have longitude and latitude for all observations in 2020.
-
-
-Convert dataset to spatial points
-
-```{r}
 stores_sf = 
   st_as_sf(healthy_stores_2020, coords = c("longitude", "latitude"), crs = st_crs(ny_zipcodes))
-```
 
-Perform a spatial join
-
-```{r}
 stores_with_zipcodes = st_join(stores_sf, ny_zipcodes)
-```
 
-Export results as csv file
-
-```{r}
 healthy_stores_with_zips = stores_with_zipcodes %>%
   mutate(longitude = st_coordinates(.)[, 1],
          latitude = st_coordinates(.)[, 2]) %>%
@@ -227,12 +198,6 @@ select(healthy_store_market, borough, year, address, longitude, latitude, ZCTA) 
 
 write.csv(healthy_stores_with_zips, "healthy_stores_with_zips.csv", row.names = FALSE)
 
-```
-
-
-Import and clean household income data for 2020
-
-```{r}
 hh_income_2020 = 
   read_csv("./data/Household Income_NYC_by zip_2020.csv", skip=1,
   na = c("-", "**", "***", "N")) %>% 
@@ -246,12 +211,7 @@ hh_income_2020 =
   drop_na()
 
 write.csv(hh_income_2020, "hh_income_2020.csv", row.names = FALSE)
-```
 
-
-Merge healthy stores dataset with zip codes and household income data for 2020. I removed any observations from "Staten Island" as they are few. Additionally, I suspect that the number of stores within a zip code may not be indicative of access to healthy food stores, since a main mode of transportation in State Island is by car. Our analyses about NYC are based on an assumption that most people are accessing their healthy foods via some form of public transportation. 
-
-```{r}
 healthy_stores_hh_data = left_join(healthy_stores_with_zips, hh_income_2020, by = "zip")
 
 healthy_stores_hh_data = 
@@ -268,6 +228,7 @@ healthy_stores_hh_data =
   drop_na()
 
 write.csv(healthy_stores_hh_data, "healthy_stores_hh_data.csv", row.names = FALSE)
+
 
 ```
 
@@ -406,7 +367,11 @@ model_tidy %>%
 ```
 We see a non-signification p-value of 0.09.
 
+
+#### Assumptions Testing
+
 However, is it appropriate to use a linear model in this case? Let's check assumptions of linearity, normality, and homoscedasticity for median income and number of stores.
+
 
 These tests will validate whether linear regression is appropriate for this relationship. Using `autoplot`, we can quickly visualize residuals (linearity and homoscedasticity check), and a Q-Q plot and histogram (normality check).
 
