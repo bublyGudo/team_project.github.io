@@ -31,26 +31,30 @@ We began by taking a look at the density of general food stores, meaning those t
 
 We followed this by an exploration and analysis of food stores that were characterized as selling healthy food options (e.g., fresh-locally grown produce, low-sodium canned goods, healthier snacks and deli options, etc.) 
 
-<img src="markets.jpg" style="width:100%">
+<br>
 
+<img src="income.jpg" style="width:100%">
+
+<br>
 
 ## General Food Store Access 
 
 
-### Load the corresponding datasets for household income in 2020 and retail food stores that we will use to represent general food store access in NYC. 
+### Question: What is the association between density (# of stores) of general food stores and household income in the year 2020?
+
+
+Load the corresponding datasets for household income in 2020 and retail food stores that we will use to represent general food store access in NYC. 
 
 ```{r}
 
-# i.	Household income in NYC (pre – 2022) 
 household <- read_csv("./data/household_income_2020(in).csv") %>%
   mutate(est_median_income = as.numeric(est_median_income))
 
-# ii.	Retail Food Store dataset (2024) 
+
 food_store <- read_csv("./data/Retail_Food_Stores_clean.csv")
 ```
 
-### Question: What is the association between density (# of stores) of general food stores and household income in the year 2020?
-  
+
 To first visualize our data, we will create a scatterplot with a linear regression to see if such a model is appropriate. 
   
 ```{r}
@@ -72,55 +76,52 @@ To first visualize our data, we will create a scatterplot with a linear regressi
   p2
 ```
 
+#### Check Assumptions
 
-
-### Check Assumptions
+Next, we will check assumptions for normality, equal variance, and linearity.
   
 ```{r}
-  # Fit the linear regression model
+
   food_store_model <- food_store %>%
     count(zip_code) %>%
     left_join(household, by = c("zip_code" = "zip")) %>%
     lm(est_median_income ~ n, data = .)
   
-  # Check Linearity and Equal Variance 
-  # Residual vs. Fitted Plot
+
   plot(food_store_model, which = 1)
   
-  # Normality Check
+
   hist(residuals(food_store_model), breaks = 20, main = "Histogram of Residuals", xlab = "Residuals")
   
-  # View the summary of the regression model
+
   summary(food_store_model)
 ```
-  
-  
-### Additional Analysis: Non-Parametric Test - Spearman Rank Correlation
-  
-* Since the linearity and equal variance is violated from the RVF plot, we use a Spearman rank correlation test to assess the association between food store density and household income. It evaluates the monotonic relationship (increasing or decreasing trend).
+
+Since the linearity and equal variance is violated from the RVF plot, we use a Spearman rank correlation test to assess the association between food store density and household income. It evaluates the monotonic relationship (increasing or decreasing trend).
+
+#### Additional Analysis: Non-Parametric Test - Spearman Rank Correlation
   
 ```{r}
   
-# Check for missing values in the relevant columns
+
   food_store_clean <- food_store %>%
     count(zip_code) %>%
     left_join(household, by = c("zip_code" = "zip"))
   
-# Count missing values
+
   sum(is.na(food_store_clean$n))
   sum(is.na(food_store_clean$est_median_income))
   
-# Remove rows with missing values
+
   food_store_clean <- food_store_clean %>%
     filter(!is.na(n) & !is.na(est_median_income))
   
-# Spearman Rank Correlation Test
+
   spearman_test <- food_store_clean %>%
     summarize(correlation = cor(n, est_median_income, method = "spearman"))
   
   spearman_test
   
-  # Spearman Correlation with P-value
   cor_test <- cor.test(food_store_clean$n, food_store_clean$est_median_income, method = "spearman")
   cor_test
   
@@ -133,15 +134,25 @@ To first visualize our data, we will create a scatterplot with a linear regressi
       title = "Relationship Between General Food Store Density and Household Income"
     ) +
     theme_minimal()
+  
+rho <- cor_test$estimate
+p_value <- cor_test$p.value
+
+
+spearman_results <- data.frame(
+  Statistic = c("Spearman Correlation Coefficient (ρ)", "P-value"),
+  Value = c(round(rho, 4), format.pval(p_value, digits = 3))
+)
+
+library(knitr)
+spearman_results %>%
+  kable(
+    col.names = c("Statistic", "Value"),
+    caption = "Spearman Rank Correlation Results"
+  )
 ```
   
-* P-value:p=7.409×10*−13 
-  This is an extremely small p-value (far below the standard threshold of 0.05), indicating that the correlation is statistically significant.
-  
-* Correlation Coefficient (rho):𝜌= -0.5077
-  This is the Spearman rank correlation coefficient, indicating a moderate negative relationship between food store density and household median income.
-  
-* Conclusion: There is a statistically significant moderate negative correlation between food store density and household median income (ρ=−0.5077, p<0.001). This indicates that ZIP codes with higher food store density tend to have lower household incomes.
+The results reveal a statistically significant moderate negative correlation between food store density and household median income (ρ = −0.5077, p < 0.001). The extremely small p-value (p = 7.409 × 10⁻¹³) confirms the robustness of this relationship, far exceeding the standard threshold for statistical significance (0.05). The Spearman rank correlation coefficient (ρ = −0.5077) indicates that ZIP codes with higher food store density are associated with lower household median incomes.
 
 <br>  
   
@@ -368,7 +379,7 @@ model_tidy %>%
 We see a non-signification p-value of 0.09.
 
 
-#### Assumptions Testing
+#### Check Assumptions
 
 However, is it appropriate to use a linear model in this case? Let's check assumptions of linearity, normality, and homoscedasticity for median income and number of stores.
 
@@ -443,6 +454,8 @@ ggplot(data = data.frame(Residuals = residuals_data), aes(x = Residuals)) +
   )
 
 ```
+
+
 The histogram of the residuals corroborates much of what we had already seen. The distribution of the residuals is right skewed, likely due to the outliers we observed. We may venture to hypothesize that those outliers are related to the three clusters we saw in the chloropleth for zip codes in Harlem, the Bronx, and Manhattan.
 
 Finally, we can look at the scatterplot of the linear model for further visual inspection. 
@@ -459,6 +472,8 @@ ggplot(stores_by_zip_unique, aes(x = median_income, y = num_stores)) +
   )
 
 ```
+
+
 There are several outliers on the lower end of median household incomes where we observe high number of stores. Furthermore, we can see that we have many more observations for incomes below $150,000.00 than above. This difference in number of observations at different median income levels could be contributing to the a difference in variance across the distribution. Overall, we can conclude that a linear regression model is not appropriate for this dataset due to several limitations including a small sample size, few observations available for certain income brackets, and the outliers observed at the lower end of the income spectrum. 
 
 
