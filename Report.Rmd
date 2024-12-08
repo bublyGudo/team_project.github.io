@@ -200,7 +200,7 @@ This bar graph effectively visualizes changes in healthy food store density acro
 
 <div style="display: flex; justify-content: space-around;">
   <img src="store_overweight_regression_files/figure-html/nonlinear scatterplot m1-1.png" alt="non linear general vs overwt" style="width:49%;">
-  <img src="store_overweight_regression_files/figure-html/Non linear-1.png" alt="non linear healthy stores vs overwt" style="width:49%;">
+  <img src="store_overweight_regression_files/figure-html/non linear-1.png" alt="non linear healthy stores vs overwt" style="width:49%;">
 </div>
 
 <br>
