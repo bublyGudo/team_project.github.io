@@ -1,15 +1,12 @@
 ---
-title: "Store Density and Household Income"
+title: "Store Density and Median Household Income in 2020"
 output: 
   html_document:
     code_folding: hide
     always_allow_html: true
 ---
   
-```{r setup, include = FALSE, error = FALSE, warning = FALSE}
-
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r setup, message = FALSE, error=FALSE, warning=FALSE}
 
 library(tidygeocoder)
 library(tidyverse)
@@ -21,6 +18,15 @@ library(mgcv)
 library(ggfortify)
 
 ```
+
+We wanted to explore the influence that household income might have on the number of food stores available to individuals in NYC depending on their zip code. Here, we refer to the number of food stores as store density. We chose the year 2020 because it was the most recent year for which there was data for all the datasets we wanted to explore. 
+
+We began by taking a look at the density of general food stores, meaning those that were not identified as specifically containing healthy food options. These consist of general retail stores. 
+
+We followed this by an exploration and analysis of food stores that were characterized as selling healthy food options (e.g., fresh-locally grown produce, low-sodium canned goods, healthier snacks and deli options, etc.) 
+
+<img src="markets.jpg" style="width:100%">
+
 
 ## General Food Store Access
 
@@ -37,11 +43,9 @@ household <- read_csv("./data/household_income_2020(in).csv") %>%
 food_store <- read_csv("./data/Retail_Food_Stores_clean.csv")
 ```
 
-### Questions and variables associated 
-
-What is the association between density (# of stores) of general food stores and household income in the year 2020?
+### Question: What is the association between density (# of stores) of general food stores and household income in the year 2020?
   
-- Type of plot: Scatterplot and linear regression
+To first visualize our data, we will create a scatterplot with a linear regression to see if such a model is appropriate. 
   
 ```{r}
   
@@ -61,6 +65,8 @@ What is the association between density (# of stores) of general food stores and
   
   p2
 ```
+
+
 
 ### Check Assumptions
   
